@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Login page{% endblock %}
+
+{% block navbar %}
+	<ul class="navbar-nav">
+		<li class="nav-item">
+			<h3>Ping Pong Game</h3>
+		</li>
+	</ul>
+{% endblock %}
+
+{% block bodycontent %}
+	{% if form.errors %}
+	<p class="alert">Incorrect username or password</p>
+	{% endif %}				
+	<form action="{% url 'login' %}" method="post" class="form-signin">
+		<table>
+			{% for field in form.visible_fields %}
+			<tr>
+				<td>{{field.label_tag}}</td>
+				<td>{{field}}</td>
+				<td class="alert">{{field.errors}}</td>
+			</tr>
+			{% endfor %}						
+		</table>
+		<button type="submit" class="btn">Login</button>	
+		<input type="hidden" name="next" value="{{next}}" />
+		{% csrf_token %}
+	</form>
+	<a href="{% url 'registration' %}">Don't have an account? Register one !</a>	
+	<br>
+{% endblock %}

@@ -5,13 +5,12 @@ from django.contrib.auth.models import User
 
 # Player model
 class Player(models.Model):
-	user = models.OneToOneField(User)
+	user = models.OneToOneField(User, null=True)
 	current_game = models.IntegerField(default=0, blank = True)
 	nickname = models.CharField(default = '', max_length=100, blank = True)
 	# image = models.ImageField()
 	bio = models.CharField(default = '', max_length=200, blank = True)
 	
-
 
 #Game model
 class Game(models.Model):
