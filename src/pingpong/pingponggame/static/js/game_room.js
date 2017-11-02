@@ -1,11 +1,11 @@
 $(document).ready(function () {
-    var socket = new WebSocket('ws://' + window.location.host + '/gameRoom/');
-    console.log("here")
-    socket.onopen = function open() {
-        console.log('WebSockets connection created.');
-    };
+    var socket = new WebSocket('ws://' + window.location.host + '/chat');
+    
+    socket.onmessage = function(e) {
+        alert(e.data);
+    }
 
-    if (socket.readyState == WebSocket.OPEN) {
-        socket.onopen();
+    socket.onopen = function() {
+        socket.send("hello world");
     }
 });
