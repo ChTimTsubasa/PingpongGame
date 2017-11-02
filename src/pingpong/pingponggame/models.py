@@ -3,11 +3,10 @@ from django.contrib.auth.models import User
 
 # Player model
 class Player(models.Model):
-	user = models.OneToOneField(User, null=True)
+	user = models.OneToOneField(User)
 	# current_game = models.ForeignKey(Game, null=True)
 	nickname = models.CharField(default = '', max_length=100, blank = True)
-	# image = models.ImageField()
-	bio = models.CharField(default = '', max_length=200, blank = True)
+	image = models.ImageField(blank = True)
 
 	def create_new_game(self):
 		new_game = Game.create_new(self)

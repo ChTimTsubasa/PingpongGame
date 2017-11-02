@@ -17,56 +17,32 @@ def registration(request):
 	context = {}
 
 	#If get request, just display web page
-	if request.method == 'GET':
-		context['registration_form'] = RegistrationForm()
+	if request.method != 'POST':
 		context['user_form'] = UserForm()
 		context['password_form'] = PasswordForm()
+		context['player_form'] = PlayerForm()
 		return render(request, 'Registration.html', context)
 
-	print ('111111111111')
 	user_form = UserForm(request.POST)
-	context['user_form'] = user_form
-
-	if not user_form.is_valid():
-		context['user_form'] = UserForm()
-		context['password_form'] = PasswordForm()
-		context['registration_form'] = RegistrationForm()
-		return render(request, 'Registration.html', context)
-
 	password_form = PasswordForm(request.POST)
+	
+	context['user_form'] = user_form
 	context['password_form'] = password_form
-	print ('aaaaaaaaaaaaaaa')
-	if not password_form.is_valid():
-		context['password_form'] = PasswordForm()
-		context['registration_form'] = RegistrationForm()
-		context['user_form'] = UserForm()
+	context['player_form'] = PlayerForm()
+
+	if not user_form.is_valid() or \
+		not password_form.is_valid():
+		print (request.POST)
 		return render(request, 'Registration.html', context)
 
-	#If user form is valid, create new user
-	newuser = user_form.save()
-	newuser.set_password(request.POST['password'])
-	print (request.POST['password'])
-	newuser.save()
+	newuser = User.objects.create_user(username=request.POST['username'],
+									   password=request.POST['password'],
+									   first_name=request.POST['first_name'],
+									   last_name=request.POST['last_name'])
+	
+	player_form = PlayerForm(request.POST, instance = newuser)
+	player_form.save()
 
-	print ('2222222222222')
-	registration_form = RegistrationForm(request.POST)
-	context['registration_form'] = registration_form
-	if not registration_form.is_valid():
-		context['registration_form'] = RegistrationForm()
-		context['user_form'] = UserForm()
-		context['password_form'] = PasswordForm()
-		return render(request, 'Registration.html', context)
-	registration = registration_form.save()
-	print ('3333333333333')
-	#Get player object and give user to it
-	# playerobj = get_object_or_404(Player, )
-	print (registration.id)
-	print (newuser.username)
-	registration.user = newuser
-	registration.save()
-	print ('444444444444')
-
-	# return render(request, 'Registration.html', context)
 	return redirect('/pingpong/main')
 
 
