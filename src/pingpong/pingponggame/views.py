@@ -76,3 +76,7 @@ def registration(request):
 def usermainpage(request):
 	context = {}
 	return render(request, 'UserMainPage.html', context)
+
+# Render the gameroom
+def gameRoom(request):
+	return render(request, 'GameRoom.html', {})
