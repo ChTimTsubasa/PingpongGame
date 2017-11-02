@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.http import HttpResponse, Http404
 from django.http import HttpResponse
+
 #Import model for application
 from pingponggame.models import *
 #Import Django forms
@@ -48,8 +49,8 @@ def registration(request):
 
 # Render the usermainpage
 @transaction.atomic
-@login_required
-def usermainpage(request):
+@login_required	
+def main(request):
 	context = {}
 	return render(request, 'UserMainPage.html', context)
 
