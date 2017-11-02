@@ -121,6 +121,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_URL = '/media/'
+
 # Channel layer configuration
 # https://realpython.com/blog/python/getting-started-with-django-channels/#websockets-101
 CHANNEL_LAYERS = {
