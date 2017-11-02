@@ -43,12 +43,12 @@ def registration(request):
 	player_form = PlayerForm(request.POST, instance = newuser)
 	player_form.save()
 
-	return redirect('/pingpong/main')
+	return redirect(reverse('main'))
 
 
 # Render the usermainpage
 @transaction.atomic
-# @login_requireds
+@login_required
 def usermainpage(request):
 	context = {}
 	return render(request, 'UserMainPage.html', context)

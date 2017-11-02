@@ -56,4 +56,10 @@
 		<button type="submit" class="btn">Register</button>		
 		{% csrf_token %}	
 	</form>	
+	
+	<div class="text-center">
+		<a class="btn" href="{% url 'login'%}">
+			Already have one? Sign in
+		</a>
+	</div>
 {% endblock %}
