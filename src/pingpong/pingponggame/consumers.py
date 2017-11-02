@@ -1,6 +1,7 @@
 from channels import Group
 
 def ws_connect(message):
+    print('connecting')
     Group('users').add(message.reply_channel)
 
 
