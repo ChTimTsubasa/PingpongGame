@@ -1,4 +1,4 @@
-<! DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<title>{% block title %}Login page{% endblock %}</title>
@@ -12,7 +12,11 @@
 		<!-- Javascript files needed -->
 		<script src="{% static 'js/popper.min.js' %}"></script>
  		<script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
- 		<script src="{% static 'js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+		{% block scripts%}
+		
+		{% endblock %}
 	</head>
 
 	<body>
