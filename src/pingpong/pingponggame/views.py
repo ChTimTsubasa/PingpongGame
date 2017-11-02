@@ -72,7 +72,7 @@ def registration(request):
 
 # Render the usermainpage
 @transaction.atomic
-@login_required
+# @login_requireds
 def usermainpage(request):
 	context = {}
 	return render(request, 'UserMainPage.html', context)

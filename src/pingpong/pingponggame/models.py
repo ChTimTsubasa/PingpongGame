@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 # Player model
 class Player(models.Model):
 	user = models.OneToOneField(User, null=True)
-	current_game = models.ForeignKey(Game, null=True)
+	# current_game = models.ForeignKey(Game, null=True)
 	nickname = models.CharField(default = '', max_length=100, blank = True)
 	# image = models.ImageField()
 	bio = models.CharField(default = '', max_length=200, blank = True)
@@ -40,9 +40,9 @@ class Player(models.Model):
 # Game Model
 class Game(models.Model):
     # Players
-	winner = models.ForeignKey(Player, null=True, blank=True)
-	creator = models.ForeignKey(Player)
-	opponent = models.ForeignKey(Player, null=True, blank=True)
+	winner = models.ForeignKey(Player, related_name='winner', null=True, blank=True)
+	creator = models.ForeignKey(Player, related_name='creator')
+	opponent = models.ForeignKey(Player, related_name='opponent',null=True, blank=True)
 
 	#Dates
 	completed = models.DateTimeField(null=True, blank=True)
@@ -59,7 +59,7 @@ class Game(models.Model):
 	@staticmethod
 	def get_by_id(id):
 		try:
-			return Game.objects.get(pk=id)
+			return Game.get_available_games.get(pk=id)
 		except Game.DoesNotExist:
 			return None
 
@@ -93,50 +93,3 @@ class Game(models.Model):
 		self.winner = winner
 		self.completed = datetime.now()
 		self.save()
-
-
-	class GameSquare(models.Model):
-		STATUS_TYPES = (
-			('Free', 'Free'),
-			('Selected', 'Selected'),
-			('Surrounding', 'Surrounding')
-		)
-		game = models.ForeignKey(Game)
-		owner = models.ForeignKey(User, null=True, blank=True)
-		status = models.CharField(choices=STATUS_TYPES,
-									max_length=25,
-									default='Free')
-		row = models.IntegerField()
-		col = models.IntegerField()
-
-		# dates
-		created = models.DateTimeField(auto_now_add=True)
-		modified = models.DateTimeField(auto_now=True)
-
-	def __unicode__(self):
-		return '{0} - ({1}, {2})'.format(self.game, self.col, self.row)
-
-	@staticmethod
-	def get_by_id(id):
-		try:
-			return GameSquare.objects.get(pk=id)
-		except GameSquare.DoesNotExist:
-			# TODO: Handle exception for gamesquare
-			return None
-
-	def get_surrounding(self):
-		"""
-		Returns this square's surrounding neighbors that are still Free
-		"""
-		# TODO:
-		# http://stackoverflow.com/questions/2373306/pythonic-and-efficient-way-of-finding-adjacent-cells-in-grid
-		ajecency_matrix = [(i, j) for i in (-1, 0, 1)
-							for j in (-1, 0, 1) if not (i == j == 0)]
-		results = []
-		for dx, dy in ajecency_matrix:
-			# boundaries check
-			if 0 <= (self.col + dy) < self.game.cols and 0 <= self.row + dx < self.game.rows:
-				# yield grid[x_coord + dx, y_coord + dy]
-				results.append((self.col + dy, self.row + dx))
-		return results
-
