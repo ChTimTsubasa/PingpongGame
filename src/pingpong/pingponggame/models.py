@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 # Player model
 class Player(models.Model):
 	user = models.OneToOneField(User)
-	# current_game = models.ForeignKey(Game, null=True)
+	current_game = models.ForeignKey('Game', null=True)
 	nickname = models.CharField(default = '', max_length=100, blank = True)
 	image = models.ImageField(blank = True)
 
