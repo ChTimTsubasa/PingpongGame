@@ -68,7 +68,10 @@ def gameRoom(request):
 def scoreboard(request):
 	context = {}
 
+	current_user = request.user
 	games = Game.objects.all()
-	context[games] = games
+	player = get_object_or_404(Player, user=current_user)
+	context['games'] = games
+	context['current_user'] = current_user
 
 	return render(request, 'ScoreBoard.html', context)

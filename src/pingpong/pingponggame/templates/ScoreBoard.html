@@ -11,19 +11,16 @@
 {% endblock %}
 
 {% block bodycontent %}
+	User Name: {{current_user.username}}
+	First Name: {{current_user.first_name}}
+	Last Name: {{current_user.last_name}}
 
-Score board
-	winner = models.ForeignKey(Player, related_name='winner', null=True, blank=True)
-	creator = models.ForeignKey(Player, related_name='creator')
-	opponent = models.ForeignKey(Player, related_name='opponent',null=True, blank=True)
+	{% for game in games %}
+		<h4>Winner: {{game.winner}}</h4>
+		<h5>Creator: {{game.creator}}</h5>
+		<h5>Opponent: {{game.opponent}}</h5>
+		<h5>Completed Time: {{game.completed}}</h5>
+		<h5>Created Time: {{game.created}}</h5> <br>
+	{% endfor %}
 
-	#Dates
-	completed = models.DateTimeField(null=True, blank=True)
-	created = models.DateTimeField(auto_now_add=True)
-	modified 
-		<h4>Winner: {{games.winner}}</h4>
-		<h5>Creator: {{games.creator}}</h5>
-		<h5>Opponent: {{otheruser.last_name}}</h5>
-		<h5>Age: {{userprofile.age}}</h5>
-		<h5>Bio: {{userprofile.bio}}</h5>
 {% endblock %}
