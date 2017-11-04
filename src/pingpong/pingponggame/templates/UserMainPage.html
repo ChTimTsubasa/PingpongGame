@@ -24,11 +24,36 @@
 
 {% block bodycontent %}
 	<div class="row">
-		<div class="col-8">
+		<div class="col-6">
 			<p>haha</p>
 		</div>
 		<div class="col-6">
-			<p>haha</p>
+			<p> Start Play Your Game! </p>
+			<p> You can choose </p>
+
+			<form method="get" action="{% url 'createRoom' %}">
+				{% csrf_token %}
+				<button type="submit">Create a Room</button>
+			</form>
+
+			<form method="get" action="{% url 'joinRoom' %}">
+				{% csrf_token %}
+				<button type="submit">Join a Room Randomly</button>
+			</form>
+
+			<form method="post" action="{% url 'joinRoom' %}">
+				{% csrf_token %}
+				<table>
+					{% for field in form.visible_fields %}
+					<tr>
+						<td>{{field.label_tag}}</td>
+						<td>{{field}}</td>
+						<td class="alert">{{field.errors}}</td>
+					</tr>
+					{% endfor %}						
+				</table>
+				<button type="submit">Join</button>
+			</form>
 		</div>
 	</div>
 

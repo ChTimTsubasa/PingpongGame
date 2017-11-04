@@ -55,10 +55,30 @@ def registration(request):
 @login_required	
 def main(request):
 	context = {}
+	context['form'] = JoinRoomForm()
 	return render(request, 'UserMainPage.html', context)
 
+
+@transaction.atomic
+@login_required	
+def create_room(request):
+	context = {}
+	player = Player.objects.filter(user=request.user).first()
+	print(player)
+
+	return render(request, 'GameRoom.html', {})
+
 # Render the gameroom
-def gameRoom(request):
+@transaction.atomic
+@login_required
+def join_room(request):
+	context = {}
+	if request.method == 'GET':
+		pass
+
+	if request.method == 'POST':
+		pass
+
 	return render(request, 'GameRoom.html', {})
 
 

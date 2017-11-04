@@ -36,3 +36,13 @@ class PasswordForm(forms.Form):
 		if password and confirm_password and password != confirm_password:
 			raise forms.ValidationError('Password Not Match.')
 		return cleaned_data	
+
+class JoinRoomForm(forms.Form):
+	room_id = forms.CharField()
+
+	def clean_room_id(self):
+		room_id = self.cleaned_data_get('room_id')
+		if not Game.get_by_id():
+			raise forms.ValidationError('No such room')
+		
+		return room_id
