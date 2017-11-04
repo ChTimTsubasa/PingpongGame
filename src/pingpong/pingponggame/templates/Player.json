@@ -1,0 +1,6 @@
+{
+    "players":[
+        {"creator_id" : "{{creator.id}}","html":"{{creator.html|safe}}"},
+        {"opponent_id" : "{{opponent.id}}","html":"{{opponent.html|safe}}"}
+    ]
+}

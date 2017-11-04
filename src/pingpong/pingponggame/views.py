@@ -70,9 +70,23 @@ def create_room(request):
 	else:
 		print("ha")
 		game = player.current_game
-	context["game"] = game
+
+	context["game"] = game.id
+	context["player"] = player.id
 
 	return render(request, 'GameRoom.html', context)
+
+@transaction.atomic
+@login_required	
+def get_players_info(request, game_id):
+	context = {}
+	game = get_object_or_404(Game, id=game_id)
+	
+	context['creator'] = game.creator
+	context['opponent'] = game.opponent
+
+	return render(request, 'Player.json', context, content_type='application/json')
+
 
 # Render the gameroom
 @transaction.atomic

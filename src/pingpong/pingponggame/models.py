@@ -1,12 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.template.loader import render_to_string
 # Player model
 class Player(models.Model):
 	user = models.OneToOneField(User)
 	current_game = models.ForeignKey('Game', null=True)
 	nickname = models.CharField(default = '', max_length=100, blank = True)
 	image = models.ImageField(upload_to = "userpictures", blank = True)
+	
+	@property
+	def html(self):
+		return render_to_string("Player.html", {"player":self}).replace("\n", "")
 
 	def create_new_game(self):
 		new_game = Game.create_new(self)
