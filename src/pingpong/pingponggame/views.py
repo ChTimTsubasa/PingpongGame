@@ -62,10 +62,17 @@ def main(request):
 @login_required	
 def create_room(request):
 	context = {}
-	player = Player.objects.filter(user=request.user).first()
-	print(player)
+	player = Player.objects.get(user=request.user)
+	
+	if not player.current_game:
+		print ("here")
+		game = player.create_new_game()
+	else:
+		print("ha")
+		game = player.current_game
+	context["game"] = game
 
-	return render(request, 'GameRoom.html', {})
+	return render(request, 'GameRoom.html', context)
 
 # Render the gameroom
 @transaction.atomic
