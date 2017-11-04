@@ -44,6 +44,7 @@ def registration(request):
 	player_form = PlayerForm(request.POST)
 	newplayer = player_form.save()
 	newplayer.user = newuser
+	newplayer.save()
 
 
 	return redirect(reverse('main'))
