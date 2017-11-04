@@ -35,4 +35,4 @@ nosetests.xml
 .DS_Store
 
 # sqlite file
-db.sqlite3
+*.sqlite3
