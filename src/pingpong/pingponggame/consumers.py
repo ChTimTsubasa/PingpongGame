@@ -1,7 +1,9 @@
 import json
+import redis
 from channels import Group
 from channels.auth import channel_session_user, channel_session_user_from_http
 
+redis_conn = redis.Redis("localhost", 6379)
 # Connected to websocket.connect
 def ws_add(message):
     # Accept the connection
@@ -17,4 +19,5 @@ def ws_message(message):
 
 # Connected to websocket.disconnect
 def ws_disconnect(message):
+    print("some one leaves")
     Group("chat").discard(message.reply_channel)

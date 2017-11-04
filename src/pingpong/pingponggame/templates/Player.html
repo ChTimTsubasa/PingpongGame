@@ -1,7 +1,10 @@
 {% load static %}
 
-    <input type='hidden' id='player_id' value="{{player.id}}">
+<div>
+    <input type='hidden' id='player_id' value='{{player.id}}'>
     <div >
-        Nick Name:{{player.nickname}}
-        User Name: {{player.user.username}}
+        <p>Nick Name:{{player.nickname}}</p>
+        <p>User Name: {{player.user.username}}</p>
     </div>
+</div>
+    
