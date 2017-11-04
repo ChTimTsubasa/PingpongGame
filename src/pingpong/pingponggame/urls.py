@@ -9,5 +9,6 @@ urlpatterns = [
 	url(r'^login$', aviews.login, {'template_name':'Login.html'}, name="login"),
 	url(r'^logout$', aviews.logout_then_login, name="logout"),
 	url(r'^main', pviews.main, name="main"),
+	url(r'^scoreboard$', pviews.scoreboard, name="scoreboard"),
 	url(r'^gameRoom$', pviews.gameRoom, name="gameRoom"),
 ]

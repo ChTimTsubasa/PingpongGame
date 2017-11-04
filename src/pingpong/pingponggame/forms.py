@@ -8,7 +8,7 @@ from pingponggame.models import *
 class PlayerForm(forms.ModelForm):
 	class Meta:
 		model = Player
-		exclude = ('user', 'current_game')
+		exclude = ('user', 'current_game',)
 		widgets = {'image': forms.FileInput()}
 		
 #User registration form
@@ -20,7 +20,7 @@ class UserForm(forms.ModelForm):
 	def clean_username(self):
 		username = self.cleaned_data.get('username')
 		if User.objects.filter(username=username):
-			raise forms.ValidationError("This user name is already taken！")
+			raise forms.ValidationError("This user name is already taken!")
 
 		return username
 

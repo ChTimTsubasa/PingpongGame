@@ -41,8 +41,10 @@ def registration(request):
 									   first_name=request.POST['first_name'],
 									   last_name=request.POST['last_name'])
 	
-	player_form = PlayerForm(request.POST, instance = newuser)
-	player_form.save()
+	player_form = PlayerForm(request.POST)
+	newplayer = player_form.save()
+	newplayer.user = newuser
+
 
 	return redirect(reverse('main'))
 
@@ -57,3 +59,15 @@ def main(request):
 # Render the gameroom
 def gameRoom(request):
 	return render(request, 'GameRoom.html', {})
+
+
+# Render the ScoreBoard
+@transaction.atomic
+@login_required	
+def scoreboard(request):
+	context = {}
+
+	games = Game.objects.all()
+	context[games] = games
+
+	return render(request, 'ScoreBoard.html', context)

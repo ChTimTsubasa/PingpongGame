@@ -1,0 +1,29 @@
+{% extends "Base.html" %}
+
+{% block title %}ScoreBoard page{% endblock %}
+
+{% block navbar %}
+	<ul class="navbar-nav">
+		<li class="nav-item">
+			<h3>Ping Pong Game</h3>
+		</li>
+	</ul>
+{% endblock %}
+
+{% block bodycontent %}
+
+Score board
+	winner = models.ForeignKey(Player, related_name='winner', null=True, blank=True)
+	creator = models.ForeignKey(Player, related_name='creator')
+	opponent = models.ForeignKey(Player, related_name='opponent',null=True, blank=True)
+
+	#Dates
+	completed = models.DateTimeField(null=True, blank=True)
+	created = models.DateTimeField(auto_now_add=True)
+	modified 
+		<h4>Winner: {{games.winner}}</h4>
+		<h5>Creator: {{games.creator}}</h5>
+		<h5>Opponent: {{otheruser.last_name}}</h5>
+		<h5>Age: {{userprofile.age}}</h5>
+		<h5>Bio: {{userprofile.bio}}</h5>
+{% endblock %}
