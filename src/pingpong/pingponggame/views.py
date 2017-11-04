@@ -41,11 +41,10 @@ def registration(request):
 									   first_name=request.POST['first_name'],
 									   last_name=request.POST['last_name'])
 	
-	player_form = PlayerForm(request.POST)
+	newplayer = Player(user = newuser)
+	player_form = PlayerForm(request.POST, instance=newplayer)
 	newplayer = player_form.save()
-	newplayer.user = newuser
 	newplayer.save()
-
 
 	return redirect(reverse('main'))
 
