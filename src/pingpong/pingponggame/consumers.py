@@ -27,9 +27,9 @@ def ws_add(message):
     if (game.available_players == 2):
         Group("game_%s" % game.id).send({
             "text": json.dumps({
-            "TYPE": "STATE",
-            "state": "ready",
-        }),
+                "TYPE": "STATE",
+                "state": "ready",
+            }),
         })
 
 @channel_session_user
