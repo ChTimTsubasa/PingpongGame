@@ -36,13 +36,11 @@ class Player(models.Model):
 		return game
 
 	def join_game_random(self):
-		if self.current_game:
-			return self.current_game
-		game = Game.get_available_games()
-		print(game[0].id)
-		if game[0] == None:
+		game = Game.get_available_game()
+
+		if not game:
 			return None
-		self.current_game = game[0]
+		self.current_game = game
 		self.current_game.add_opponent(self)
 		self.save()
 		return game[0]
@@ -74,8 +72,8 @@ class Game(models.Model):
 		return 'Game #{0}'.format(self.pk)
 
 	@staticmethod
-	def get_available_games():
-		return Game.objects.filter(opponent=None, completed=None)
+	def get_available_game():
+		return Game.objects.filter(opponent=None, completed=None).first()
 
 	@staticmethod
 	def get_by_id(id):

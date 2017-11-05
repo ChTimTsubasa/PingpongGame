@@ -23,10 +23,10 @@
 {% endblock %}
 
 {% block bodycontent %}
+	{% for error in errors %}
+		<p class="alert">{{error}}</p>
+	{% endfor %}
 	<div class="row">
-		{% for error in errors %}
-			<p class="alert">{{error}}</p>
-		{% endfor %}
 
 		<div class="col-6">
 			<p>User Name: {{user.username}}</p>
