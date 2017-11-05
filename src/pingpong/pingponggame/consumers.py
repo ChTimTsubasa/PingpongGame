@@ -17,7 +17,7 @@ def ws_add(message):
         return
     
     message.reply_channel.send({"accept": True})
-    
+    #available_players means how many players connect to the current game room
     game = player.current_game
     game.player_ready()
     print(game.available_players)
