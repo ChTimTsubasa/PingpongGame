@@ -14,10 +14,10 @@ $(document).ready(function () {
     }
 
     socket.onopen = function() {
-        socket.send("hello world");
+        // socket.send("hello world");
     }
 
     socket.onclose = function() {
-        socket.send("closing");
+        // socket.send("closing");
     }
 });

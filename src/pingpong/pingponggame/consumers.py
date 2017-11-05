@@ -52,5 +52,6 @@ def ws_disconnect(message):
 
     game = player.current_game
     game.player_gone()
+    game.emit_player(player)
     print (game.available_players)
     Group("game_%s" % game.id).discard(message.reply_channel)
