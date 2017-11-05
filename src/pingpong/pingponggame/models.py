@@ -81,7 +81,7 @@ class Game(models.Model):
 	@staticmethod
 	def get_by_id(id):
 		try:
-			return Game.objects.get(pk=id)
+			return Game.objects.filter(opponent=None, completed=None).get(pk=id)
 		except Game.DoesNotExist:
 			return None
 
@@ -105,12 +105,15 @@ class Game(models.Model):
 
 	def emit_player(self, player):
 		if self.opponent == player:
-			self.opponent = null
+			self.opponent = None
 			self.save()
 		if self.creator == player:
-			self.creator = self.opponent
-			self.opponent = null
-			self.save()
+			if self.opponent:
+				self.creator = self.opponent
+				self.opponent = None
+				self.save()
+			else:
+				self.delete()
 
 	def mark_complete(self, winner):
 		"""

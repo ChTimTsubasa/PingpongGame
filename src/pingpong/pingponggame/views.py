@@ -48,7 +48,6 @@ def registration(request):
 
 	return redirect(reverse('main'))
 
-
 # Render the usermainpage
 @transaction.atomic
 @login_required	
@@ -57,7 +56,6 @@ def main(request):
 	context['form'] = JoinRoomForm()
 	context['user'] = request.user
 	return render(request, 'UserMainPage.html', context)
-
 
 @transaction.atomic
 @login_required	
@@ -83,7 +81,6 @@ def get_players_info(request, game_id):
 
 	return render(request, 'Player.json', context, content_type='application/json')
 
-
 # Render the gameroom
 @transaction.atomic
 @login_required
@@ -102,31 +99,17 @@ def join_room(request):
 			context['form'] = JoinRoomForm()
 			return render(request, 'UserMainPage.html', context)
 
-		#For test, define winner
-		# joined_game[0].winner = current_player
-		# joined_game[0].save()
 		context['game'] = joined_game.id
 
 	if request.method == 'POST':
 		join_form =  JoinRoomForm(request.POST)
 		if not join_form.is_valid():
+			context['form'] = join_form
 			return render(request, 'UserMainPage.html', context)
 
 		room_id = request.POST['room_id']
 		
 		game = current_player.join_game_by_id(room_id)
-		if not game:
-			print('no room')
-			errors.append('no such game room')
-			context['errors'] = errors
-			context['form'] = JoinRoomForm()
-			return render(request, 'UserMainPage.html', context)
-		elif game == 'full':
-			errors.append('You can not join the room, its currently full')
-			context['errors'] = errors
-			context['form'] = JoinRoomForm()
-			return render(request, 'UserMainPage.html', context)
-		print('here')
 		# For test, define winner
 		# 
 		context['game'] = game.id
