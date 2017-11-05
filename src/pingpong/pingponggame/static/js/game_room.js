@@ -7,7 +7,7 @@ function playerUpdate() {
 }
 
 $(document).ready(function () {
-    var socket = new WebSocket('ws://' + window.location.host + '/chat');
+    var socket = new WebSocket('ws://' + window.location.host + '/game$');
     
     socket.onmessage = function(e) {
         alert(e.data);
