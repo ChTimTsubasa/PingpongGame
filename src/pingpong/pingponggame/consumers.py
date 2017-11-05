@@ -55,3 +55,9 @@ def ws_disconnect(message):
     player.leave_game()
     print (game.available_players)
     Group("game_%s" % game.id).discard(message.reply_channel)
+    Group("game_%s" % game.id).send({
+            "text": json.dumps({
+                "TYPE": "STATE",
+                "state": "unready",
+            }),
+        })
