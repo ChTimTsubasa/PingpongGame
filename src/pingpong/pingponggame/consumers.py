@@ -24,7 +24,7 @@ def ws_add(message):
     
     Group("game_%s" % game.id).add(message.reply_channel)
     
-    if (game.available_players == 2):
+    if game.available_players == 2:
         Group("game_%s" % game.id).send({
             "text": json.dumps({
                 "TYPE": "STATE",
@@ -37,11 +37,20 @@ def ws_add(message):
 def ws_message(message):
     player = Player.objects.get(user=message.user)
     game = player.current_game
-    score = int(message.content['text'])
-    game.add_score(player)
-    # Group("game_%s" % game.id).send({
-    #     "text": "[user] %s" % message.content['text'],
-    # })
+    data = json.loads(message['text'])
+    print(data)
+    print(data['TYPE'])
+    if (data['TYPE'] == 'GAME'):
+        score = data['score']
+        game.set_player_score(player, score)
+        winner = game.determine_winner()
+        if winner:
+            Group("game_%s" % game.id).send({
+                "text": json.dumps({
+                    "TYPE": "GAME",
+                    "winner": winner.nickname,
+                }),
+            })
 
 @channel_session_user
 @transaction.atomic

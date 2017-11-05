@@ -14,6 +14,8 @@ function handle(message) {
         } else {
             $('#win_but').prop('disabled', true);
         }
+    } else if (message.TYPE == "GAME") {
+        alert('winner is ' + message.winner);
     }
 }
 
@@ -53,11 +55,14 @@ $(document).ready(function () {
     }
 
     $('#win_but').prop('disabled', true);
-    // $('#win_but').click(function() {
-    //     websocket.send(JSON.stringify({
-    //         TYPE: "GAME",
-    //         player: $('player').val(),
-    //     }));
-    // })
 
+    $('#win_but').click(function() {
+        console.log ("button clicked")
+        socket.send(JSON.stringify({
+            TYPE: "GAME",
+            score: Math.floor(1 + Math.random() * 10)
+        }));
+
+        $('#win_but').prop('disabled', true);
+    })
 });

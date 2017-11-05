@@ -5,6 +5,8 @@ from django.template.loader import render_to_string
 
 from channels import Group
 
+import datetime
+
 # Player model
 class Player(models.Model):
 	user = models.OneToOneField(User)
@@ -17,8 +19,6 @@ class Player(models.Model):
 		return render_to_string("Player.html", {"player":self}).replace("\n", "")
 
 	def create_new_game(self):
-		if self.current_game:
-			return self.current_game
 		new_game = Game.create_new(self)
 		self.current_game = new_game
 		self.save()
@@ -51,7 +51,7 @@ class Player(models.Model):
 		self.current_game.emit_player(self)
 		self.current_game = None
 		self.save()
-		
+	
 
 # TODO add the source of reference
 # Game Model
@@ -120,7 +120,7 @@ class Game(models.Model):
 		Sets a game to completed status and records the winner
 		"""
 		self.winner = winner
-		self.completed = datetime.now()
+		self.completed = datetime.datetime.now()
 		self.save()
 
 	def player_ready(self):
@@ -130,3 +130,26 @@ class Game(models.Model):
 	def player_gone(self):
 		self.available_players = self.available_players - 1
 		self.save()
+
+	def set_player_score(self, player, score):
+		if player == self.creator:
+			self.creator_score = score
+			self.save()
+			print('c')
+		elif player == self.opponent:
+			self.opponent_score = score
+			self.save()
+			print('o')
+	
+	def determine_winner(self):
+		print(self.creator_score)
+		print(self.opponent_score)
+		if self.creator_score == 0 or self.opponent_score == 0:
+			return None
+		if self.creator_score >= self.opponent_score:
+			print("here")
+			self.mark_complete(self.creator)
+		else:
+			print("here2")
+			self.mark_complete(self.opponent)
+		return self.winner
