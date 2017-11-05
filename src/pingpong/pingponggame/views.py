@@ -93,13 +93,32 @@ def get_players_info(request, game_id):
 @login_required
 def join_room(request):
 	context = {}
+	current_user = request.user
+	current_player = get_object_or_404(Player, user=current_user)
+	context['player'] = current_player.id
+
 	if request.method == 'GET':
-		pass
+		joined_game = current_player.join_game_random()
+
+		#For test, define winner
+		joined_game[0].winner = current_player
+		joined_game[0].save()
+		context['game'] = joined_game[0].id
 
 	if request.method == 'POST':
-		pass
+		join_form =  JoinRoomForm(request.POST)
+		if not join_form.is_valid():
+			return render(request, 'UserMainPage.html', context)
+		room_id = request.POST['room_id']
+		# game = get_object_or_404(Game, id=room_id)
 
-	return render(request, 'GameRoom.html', {})
+		game = current_player.join_game_by_id(room_id)
+		#For test, define winner
+		game[0].winner = current_player
+		game[0].save()
+		context['game'] = game[0].id
+
+	return render(request, 'GameRoom.html', context)
 
 
 # Render the ScoreBoard

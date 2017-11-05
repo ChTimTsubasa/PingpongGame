@@ -31,9 +31,11 @@ class Player(models.Model):
 		return self.join_game(game)
 
 	def join_game(self, game):
-		if not game:
+		if game[0] == None:
 			return None
-		self.current_game = game
+		print('Game inside model!!!')
+		print(game[0])
+		self.current_game = game[0]
 		self.save()
 		return game
 

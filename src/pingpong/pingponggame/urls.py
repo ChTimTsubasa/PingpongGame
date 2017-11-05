@@ -12,6 +12,5 @@ urlpatterns = [
 	url(r'^scoreboard$', pviews.scoreboard, name="scoreboard"),
 	url(r'^createRoom$', pviews.create_room, name="createRoom"),
 	url(r'^joinRoom$', pviews.join_room, name="joinRoom"),
-
 	url(r'^getPlayersInfo/(?P<game_id>.+)$', pviews.get_players_info, name="getPlayersInfo"),
 ]
