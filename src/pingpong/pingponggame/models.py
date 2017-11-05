@@ -25,12 +25,13 @@ class Player(models.Model):
 		return new_game
 
 	def join_game_by_id(self, game_id):
-		if self.current_game:
-			return self.current_game
 		game = Game.get_by_id(game_id)
-		if game == None:
+		if not game:
 			return None
+		if game.opponent: #game is full already
+			return "full"
 		self.current_game = game
+		self.current_game.add_opponent(self)
 		self.save()		
 		return game
 
@@ -38,17 +39,20 @@ class Player(models.Model):
 		if self.current_game:
 			return self.current_game
 		game = Game.get_available_games()
+		print(game[0].id)
 		if game[0] == None:
-			return None	
-		self.current_game = game[0]	
+			return None
+		self.current_game = game[0]
+		self.current_game.add_opponent(self)
 		self.save()
-		return self.join_game(game)
+		return game[0]
 
 	def leave_game(self):
 		if not self.current_game:
 			return
 		self.current_game.emit_player(self)
-		self.current_game = null
+		self.current_game = None
+		self.save()
 		
 
 # TODO add the source of reference
@@ -76,7 +80,7 @@ class Game(models.Model):
 	@staticmethod
 	def get_by_id(id):
 		try:
-			return Game.get_available_games().get(pk=id)
+			return Game.objects.get(pk=id)
 		except Game.DoesNotExist:
 			return None
 
@@ -94,12 +98,9 @@ class Game(models.Model):
 
 		return new_game
 
-	@staticmethod
-	def join_as_opponent(self, player):
-		if not self.opponent == None:
-			return 0
+	def add_opponent(self, player):
 		self.opponent = player
-		return 1
+		self.save()
 
 	def emit_player(self, player):
 		if self.opponent == player:

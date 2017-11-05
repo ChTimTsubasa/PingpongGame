@@ -64,13 +64,7 @@ def main(request):
 def create_room(request):
 	context = {}
 	player = Player.objects.get(user=request.user)
-	
-	# if not player.current_game:
-	# 	print ("here")
-	# 	game = player.create_new_game()
-	# else:
-	# 	print("ha")
-	# 	game = player.current_game
+
 	game = player.create_new_game()
 
 	context["game"] = game.id
@@ -99,21 +93,19 @@ def join_room(request):
 	current_user = request.user
 	current_player = get_object_or_404(Player, user=current_user)
 	context['player'] = current_player.id
-
+	print (Game.objects.filter(opponent=None, completed=None))
 	if request.method == 'GET':
 		joined_game = current_player.join_game_random()
-
-		#To do-----if room is full, try to find an empty room for the user
-
-		# if Game.join_as_opponent(joined_game, current_player) == 0:
-		# 	errors.append('You can not join the room, its currently full')
-		# 	context['errors'] = errors
-		# 	return render(request, 'UserMainPage.html', context)
+		if not joined_game:
+			errors.append('There is no room available now')
+			context['errors'] = errors
+			context['form'] = JoinRoomForm()
+			return render(request, 'UserMainPage.html', context)
 
 		#For test, define winner
-		joined_game[0].winner = current_player
-		joined_game[0].save()
-		context['game'] = joined_game[0].id
+		# joined_game[0].winner = current_player
+		# joined_game[0].save()
+		context['game'] = joined_game.id
 
 	if request.method == 'POST':
 		join_form =  JoinRoomForm(request.POST)
@@ -121,18 +113,22 @@ def join_room(request):
 			return render(request, 'UserMainPage.html', context)
 
 		room_id = request.POST['room_id']
-		# game = get_object_or_404(Game, id=room_id)
-
+		
 		game = current_player.join_game_by_id(room_id)
-
-		if Game.join_as_opponent(game, current_player) == 0:
+		if not game:
+			print('no room')
+			errors.append('no such game room')
+			context['errors'] = errors
+			context['form'] = JoinRoomForm()
+			return render(request, 'UserMainPage.html', context)
+		elif game == 'full':
 			errors.append('You can not join the room, its currently full')
 			context['errors'] = errors
+			context['form'] = JoinRoomForm()
 			return render(request, 'UserMainPage.html', context)
-
-		#For test, define winner
-		game.winner = current_player
-		game.save()
+		print('here')
+		# For test, define winner
+		# 
 		context['game'] = game.id
 
 	return render(request, 'GameRoom.html', context)
