@@ -55,6 +55,7 @@ def registration(request):
 def main(request):
 	context = {}
 	context['form'] = JoinRoomForm()
+	context['user'] = request.user
 	return render(request, 'UserMainPage.html', context)
 
 
@@ -94,12 +95,17 @@ def get_players_info(request, game_id):
 @login_required
 def join_room(request):
 	context = {}
+	errors = []
 	current_user = request.user
 	current_player = get_object_or_404(Player, user=current_user)
 	context['player'] = current_player.id
 
 	if request.method == 'GET':
 		joined_game = current_player.join_game_random()
+		if join_as_opponent(current_player) == 0:
+			errors.append('You can not join the room, its currently full')
+			context['errors'] = errors
+			return render(request, 'UserMainPage.html', context)
 
 		#For test, define winner
 		joined_game[0].winner = current_player

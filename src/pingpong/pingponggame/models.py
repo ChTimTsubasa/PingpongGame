@@ -85,6 +85,16 @@ class Game(models.Model):
 
 		return new_game
 
+	@staticmethod
+	def join_as_opponent(self, player):
+		if not self.opponent == null:
+			print('here*******************8')
+			return 0
+		print('here&&&&&&&&&&&&&&&&&&&&&')
+		self.opponent = player
+		return 1
+
+
 	def emit_player(self, player):
 		if self.opponent == player:
 			self.opponent = null
