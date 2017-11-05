@@ -11,12 +11,13 @@
 {% endblock %}
 
 {% block bodycontent %}
-	User Name: {{current_user.username}}
-	First Name: {{current_user.first_name}}
-	Last Name: {{current_user.last_name}}
+	<h4>User Name: {{current_user.username}}</h4>
+	<h4>First Name: {{current_user.first_name}}</h4>
+	<h4>Last Name: {{current_user.last_name}}</h4> <br>
 
+	<h4>Score Board:</h4> <br>
 	{% for game in games %}
-		<h4>Winner: {{game.winner}}</h4>
+		<h5>Winner: {{game.winner}}</h5>
 		<h5>Creator: {{game.creator}}</h5>
 		<h5>Opponent: {{game.opponent}}</h5>
 		<h5>Completed Time: {{game.completed}}</h5>
