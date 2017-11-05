@@ -24,20 +24,19 @@ class Player(models.Model):
 
 	def join_game_by_id(self, game_id):
 		game = Game.get_by_id(game_id)
-		return self.join_game(game)
+		if game == None:
+			return None
+		self.current_game = game
+		self.save()		
+		return game
 
 	def join_game_random(self):
 		game = Game.get_available_games()
-		return self.join_game(game)
-
-	def join_game(self, game):
 		if game[0] == None:
-			return None
-		print('Game inside model!!!')
-		print(game[0])
-		self.current_game = game[0]
+			return None	
+		self.current_game = game[0]	
 		self.save()
-		return game
+		return self.join_game(game)
 
 	def leave_game(self):
 		if not self.current_game:
@@ -68,7 +67,7 @@ class Game(models.Model):
 	@staticmethod
 	def get_by_id(id):
 		try:
-			return Game.get_available_games.get(pk=id)
+			return Game.get_available_games().get(pk=id)
 		except Game.DoesNotExist:
 			return None
 

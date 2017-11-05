@@ -64,12 +64,13 @@ def create_room(request):
 	context = {}
 	player = Player.objects.get(user=request.user)
 	
-	if not player.current_game:
-		print ("here")
-		game = player.create_new_game()
-	else:
-		print("ha")
-		game = player.current_game
+	# if not player.current_game:
+	# 	print ("here")
+	# 	game = player.create_new_game()
+	# else:
+	# 	print("ha")
+	# 	game = player.current_game
+	game = player.create_new_game()
 
 	context["game"] = game.id
 	context["player"] = player.id
@@ -114,9 +115,9 @@ def join_room(request):
 
 		game = current_player.join_game_by_id(room_id)
 		#For test, define winner
-		game[0].winner = current_player
-		game[0].save()
-		context['game'] = game[0].id
+		game.winner = current_player
+		game.save()
+		context['game'] = game.id
 
 	return render(request, 'GameRoom.html', context)
 

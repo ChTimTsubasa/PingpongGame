@@ -41,8 +41,8 @@ class JoinRoomForm(forms.Form):
 	room_id = forms.CharField()
 
 	def clean_room_id(self):
-		room_id = self.cleaned_data_get('room_id')
-		if not Game.get_by_id():
+		room_id = self.cleaned_data.get('room_id')
+		if not Game.get_by_id(room_id):
 			raise forms.ValidationError('No such room')
 		
 		return room_id
