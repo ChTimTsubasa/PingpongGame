@@ -17,12 +17,16 @@ class Player(models.Model):
 		return render_to_string("Player.html", {"player":self}).replace("\n", "")
 
 	def create_new_game(self):
+		if self.current_game:
+			return self.current_game
 		new_game = Game.create_new(self)
 		self.current_game = new_game
 		self.save()
 		return new_game
 
 	def join_game_by_id(self, game_id):
+		if self.current_game:
+			return self.current_game
 		game = Game.get_by_id(game_id)
 		if game == None:
 			return None
@@ -31,6 +35,8 @@ class Player(models.Model):
 		return game
 
 	def join_game_random(self):
+		if self.current_game:
+			return self.current_game
 		game = Game.get_available_games()
 		if game[0] == None:
 			return None	
@@ -42,6 +48,7 @@ class Player(models.Model):
 		if not self.current_game:
 			return
 		self.current_game.emit_player(self)
+		self.current_game = null
 		
 
 # TODO add the source of reference
@@ -56,6 +63,8 @@ class Game(models.Model):
 	completed = models.DateTimeField(null=True, blank=True)
 	created = models.DateTimeField(auto_now_add=True)
 	modified = models.DateTimeField(auto_now=True)
+
+	#game state
 
 	def __unicode__(self):
 		return 'Game #{0}'.format(self.pk)
@@ -88,12 +97,9 @@ class Game(models.Model):
 	@staticmethod
 	def join_as_opponent(self, player):
 		if not self.opponent == None:
-			print('here*******************8')
 			return 0
-		print('here&&&&&&&&&&&&&&&&&&&&&')
 		self.opponent = player
 		return 1
-
 
 	def emit_player(self, player):
 		if self.opponent == player:
