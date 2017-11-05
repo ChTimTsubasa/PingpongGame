@@ -4,7 +4,9 @@ from channels.auth import channel_session_user, channel_session_user_from_http
 from django.core.cache import cache
 from .models import Player, Game
 
+from django.db import transaction
 @channel_session_user_from_http
+@transaction.atomic
 # Connected to websocket.connect
 def ws_add(message):
     player = Player.objects.get(user=message.user)
@@ -17,29 +19,38 @@ def ws_add(message):
     message.reply_channel.send({"accept": True})
     
     game = player.current_game
+    game.player_ready()
+    print(game.available_players)
     
     Group("game_%s" % game.id).add(message.reply_channel)
-
-    if not cache.get(game.id):
-        cache.set(game.id, game)
-    else:
-        game = cache.get(game.id)
     
-    print(cache.get(game.id))
-    # Two people are available
-    message = {'room':str(game.id)}
-    print (message)
+    if (game.available_players == 2):
+        Group("game_%s" % game.id).send({
+            "text": json.dumps({
+            "TYPE": "STATE",
+            "state": "ready",
+        }),
+        })
 
 @channel_session_user
 # Connected to websocket.receive
 def ws_message(message):
-    Group("chat").send({
-        "text": "[user] %s" % message.content['text'],
-    })
+    player = Player.objects.get(user=message.user)
+    game = player.current_game
+    score = int(message.content['text'])
+    game.add_score(player)
+    # Group("game_%s" % game.id).send({
+    #     "text": "[user] %s" % message.content['text'],
+    # })
 
 @channel_session_user
+@transaction.atomic
 # Connected to websocket.disconnect
 def ws_disconnect(message):
     print("some one leaves")
-    Group("chat").discard(message.reply_channel)
+    player = Player.objects.get(user=message.user)
 
+    game = player.current_game
+    game.player_gone()
+    print (game.available_players)
+    Group("game_%s" % game.id).discard(message.reply_channel)

@@ -43,7 +43,7 @@ class Player(models.Model):
 		self.current_game = game
 		self.current_game.add_opponent(self)
 		self.save()
-		return game[0]
+		return game
 
 	def leave_game(self):
 		if not self.current_game:
@@ -67,6 +67,9 @@ class Game(models.Model):
 	modified = models.DateTimeField(auto_now=True)
 
 	#game state
+	available_players = models.IntegerField(default=0)
+	creator_score = models.IntegerField(default=0)
+	opponent_score = models.IntegerField(default=0)
 
 	def __unicode__(self):
 		return 'Game #{0}'.format(self.pk)
@@ -115,4 +118,12 @@ class Game(models.Model):
 		"""
 		self.winner = winner
 		self.completed = datetime.now()
+		self.save()
+
+	def player_ready(self):
+		self.available_players = self.available_players + 1
+		self.save()
+
+	def player_gone(self):
+		self.available_players = self.available_players - 1
 		self.save()
