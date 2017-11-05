@@ -102,10 +102,13 @@ def join_room(request):
 
 	if request.method == 'GET':
 		joined_game = current_player.join_game_random()
-		if join_as_opponent(current_player) == 0:
-			errors.append('You can not join the room, its currently full')
-			context['errors'] = errors
-			return render(request, 'UserMainPage.html', context)
+
+		#To do-----if room is full, try to find an empty room for the user
+
+		# if Game.join_as_opponent(joined_game, current_player) == 0:
+		# 	errors.append('You can not join the room, its currently full')
+		# 	context['errors'] = errors
+		# 	return render(request, 'UserMainPage.html', context)
 
 		#For test, define winner
 		joined_game[0].winner = current_player
@@ -116,10 +119,17 @@ def join_room(request):
 		join_form =  JoinRoomForm(request.POST)
 		if not join_form.is_valid():
 			return render(request, 'UserMainPage.html', context)
+
 		room_id = request.POST['room_id']
 		# game = get_object_or_404(Game, id=room_id)
 
 		game = current_player.join_game_by_id(room_id)
+
+		if Game.join_as_opponent(game, current_player) == 0:
+			errors.append('You can not join the room, its currently full')
+			context['errors'] = errors
+			return render(request, 'UserMainPage.html', context)
+
 		#For test, define winner
 		game.winner = current_player
 		game.save()

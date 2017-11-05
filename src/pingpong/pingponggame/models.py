@@ -87,7 +87,7 @@ class Game(models.Model):
 
 	@staticmethod
 	def join_as_opponent(self, player):
-		if not self.opponent == null:
+		if not self.opponent == None:
 			print('here*******************8')
 			return 0
 		print('here&&&&&&&&&&&&&&&&&&&&&')
