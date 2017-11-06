@@ -1,10 +1,10 @@
-function playerUpdate() {
-    var creator_id = data.players[0].creator_id;
-    var ori_creator = $("#creator").children('div');
-    if (creator_id != "") {
-        ori_creator.replaceWith(data.players[0].html);
-    }
-}
+// function playerUpdate() {
+//     var creator_id = data.players[0].creator_id;
+//     var ori_creator = $("#creator").children('div');
+//     if (creator_id != "") {
+//         ori_creator.replaceWith(data.players[0].html);
+//     }
+// }
 
 function handle(message) {
     console.log(message)
