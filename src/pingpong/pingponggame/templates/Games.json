@@ -1,0 +1,7 @@
+{
+    "games":[
+      {% for game in games %}{% include 'grumblr/game.json' %}{% if not forloop.last %}, {% endif %}{% endfor %}
+    ],
+    "latest_game": "{{latest_comment}}"
+}
+  
