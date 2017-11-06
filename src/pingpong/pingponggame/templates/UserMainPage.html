@@ -28,41 +28,49 @@
 	{% endfor %}
 	<div class="row">
 
-		<div class="col-6">
-			<p>User Name: {{user.username}}</p>
-			<p>First Name: {{user.first_name}}</p>
-			<p>Last Name: {{user.last_name}}</p>
-			<p>Nick Name: {{player.nickname}}</p>
+		<div class="col-4">
+			<div class="block">
+				<p>User Name: {{user.username}}</p>
+				<p>First Name: {{user.first_name}}</p>
+				<p>Last Name: {{user.last_name}}</p>
+				<p>Nick Name: {{player.nickname}}</p>
+			</div>
 		</div>
-		<div class="col-6">
-			<p> Start Play Your Game! </p>
-			<p> You can choose </p>
-
-			<form method="get" action="{% url 'createRoom' %}">
-				{% csrf_token %}
-				<button type="submit">Create a Room</button>
-			</form>
-
-			<form method="get" action="{% url 'joinRoom' %}">
-				{% csrf_token %}
-				<button type="submit">Join a Room Randomly</button>
-			</form>
-
-			<form method="post" action="{% url 'joinRoom' %}">
-				{% csrf_token %}
-				<table>
-					{% for field in form.visible_fields %}
-					<tr>
-						<td>{{field.label_tag}}</td>
-						<td>{{field}}</td>
-						<td class="alert">{{field.errors}}</td>
-					</tr>
-					{% endfor %}						
-				</table>
-				<button type="submit">Join</button>
-			</form>
+		<div class="col-8">
+			<div class="block">
+				<h1> Start Play Your Game! </h1>
+				<p> You can choose </p>
+				
+				<p>Create your own room</p>
+				<form method="get" action="{% url 'createRoom' %}">
+					{% csrf_token %}
+					<button type="submit">Create</button>
+				</form>
+	
+				<br>
+				<p> Randomly Join a room </p>
+				<form method="get" action="{% url 'joinRoom' %}">
+					{% csrf_token %}
+					<button type="submit">Shuffle</button>
+				</form>
+	
+				<br>
+				<p>Join a room given an ID</p>
+				<form method="post" action="{% url 'joinRoom' %}">
+					{% csrf_token %}
+					<table>
+						{% for field in form.visible_fields %}
+						<tr>
+							<td>{{field.label_tag}}</td>
+							<td>{{field}}</td>
+							<td class="alert">{{field.errors}}</td>
+						</tr>
+						{% endfor %}						
+					</table>
+					<button type="submit">Join</button>
+				</form>
+			</div>
 		</div>
 	</div>
 
 {% endblock %}
-

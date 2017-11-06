@@ -18,5 +18,5 @@ from pingponggame import views as pviews
 
 urlpatterns = [
     url(r'^pingpong/', include('pingponggame.urls')),
-    url(r'^$', pviews.main),
+    url(r'^/$', pviews.main),
 ]
