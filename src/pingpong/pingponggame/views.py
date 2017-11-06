@@ -53,8 +53,10 @@ def registration(request):
 @login_required	
 def main(request):
 	context = {}
+	player = get_object_or_404(Player, user=request.user)
 	context['form'] = JoinRoomForm()
 	context['user'] = request.user
+	context['player'] = player
 	return render(request, 'UserMainPage.html', context)
 
 @transaction.atomic
