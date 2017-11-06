@@ -1,0 +1,13 @@
+.block {
+	border-style: solid;
+	
+	border-color: darkgrey;
+	background-color: #DCDCDC;
+
+	border-width: 2px;
+	margin-top: 20px;
+	margin-bottom: 30px;
+	border-radius: 5px;
+
+	border-top: 1px solid grey;
+}
