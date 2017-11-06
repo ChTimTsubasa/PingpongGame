@@ -38,8 +38,8 @@ function updatePlayerInfo(data) {
 
 
 $(document).ready(function () {
-    // var socket = new WebSocket('ws://' + window.location.host + '/game$');
-    var socket = new WebSocket('ws://' + window.location.host);    
+    var socket = new WebSocket('ws://' + window.location.host);
+    sendRequest();
     window.setInterval(sendRequest, 1000);
     socket.onmessage = function(e) {
         var data = jQuery.parseJSON(e.data)

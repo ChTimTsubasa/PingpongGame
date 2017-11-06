@@ -58,8 +58,11 @@ def ws_message(message):
 def ws_disconnect(message):
     print("some one leaves")
     player = Player.objects.get(user=message.user)
-
     game = player.current_game
+    # this game is over
+    if game.winner:
+        print("game is already over~")
+        return
     game.player_gone()
     player.leave_game()
     print (game.available_players)

@@ -16,12 +16,14 @@
 	<h4>Last Name: {{current_user.last_name}}</h4> <br>
 
 	<h4>Score Board:</h4> <br>
-	{% for game in games %}
-		<h5>Winner: {{game.winner}}</h5>
-		<h5>Creator: {{game.creator}}</h5>
-		<h5>Opponent: {{game.opponent}}</h5>
-		<h5>Completed Time: {{game.completed}}</h5>
-		<h5>Created Time: {{game.created}}</h5> <br>
-	{% endfor %}
+	<input id='latest_game', type='text' value = '-1'>
+	<div id='scoreboard'>
 
+	</div>
+
+{% endblock %}
+
+{% block scripts %}
+	{% load static %}
+	<script src="{% static 'js/score_board.js' %}"></script>
 {% endblock %}

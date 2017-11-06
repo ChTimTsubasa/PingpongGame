@@ -51,7 +51,6 @@ class Player(models.Model):
 		self.current_game.emit_player(self)
 		self.current_game = None
 		self.save()
-	
 
 # TODO add the source of reference
 # Game Model
@@ -73,6 +72,10 @@ class Game(models.Model):
 
 	def __unicode__(self):
 		return 'Game #{0}'.format(self.pk)
+
+	@staticmethod
+	def get_newer_game(id):
+		return Game.objects.filter(winner__isnull=False, id__gt=id).order_by('completed')
 
 	@staticmethod
 	def get_available_game():
@@ -153,3 +156,7 @@ class Game(models.Model):
 			print("here2")
 			self.mark_complete(self.opponent)
 		return self.winner
+
+	@property
+	def html(self):
+		return render_to_string("Game.html", {"game":self}).replace("\n", "")

@@ -112,8 +112,6 @@ def join_room(request):
 		room_id = request.POST['room_id']
 		
 		game = current_player.join_game_by_id(room_id)
-		# For test, define winner
-		# 
 		context['game'] = game.id
 
 	return render(request, 'GameRoom.html', context)
@@ -128,7 +126,22 @@ def scoreboard(request):
 	current_user = request.user
 	games = Game.objects.all()
 	player = get_object_or_404(Player, user=current_user)
-	context['games'] = games
+	context['latest_game'] = -1
 	context['current_user'] = current_user
 
 	return render(request, 'ScoreBoard.html', context)
+
+@transaction.atomic
+@login_required
+def get_latest_game(request, game_id):
+	context = {}
+	games = Game.get_newer_game(game_id)
+	print(games)
+	if not games.last():
+		context['latest_game'] = game_id
+	else:
+		context['latest_game'] = games.last().id
+
+	context['games'] = games
+
+	return render(request, 'Games.json', context, content_type='application/json')
