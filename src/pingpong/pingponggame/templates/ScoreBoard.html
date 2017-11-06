@@ -11,15 +11,35 @@
 {% endblock %}
 
 {% block bodycontent %}
-	<h4>User Name: {{current_user.username}}</h4>
-	<h4>First Name: {{current_user.first_name}}</h4>
-	<h4>Last Name: {{current_user.last_name}}</h4> <br>
-
-	<h4>Score Board:</h4> <br>
-	<input id='latest_game', type='text' value = '-1'>
-	<div id='scoreboard'>
-
+<div class="row">
+	<div class="col-1"></div>
+	<div class="col-3">
+		<h4>User Name: {{current_user.username}}</h4>
+		<h4>First Name: {{current_user.first_name}}</h4>
+		<h4>Last Name: {{current_user.last_name}}</h4> <br>
 	</div>
+	<div class="col-7 block scoreboard">
+		<h4>Score Board:</h4> <br>
+		<input id='latest_game', type='hidden' value = '-1'>
+		<table id="scoreboard" border="1">
+			<thead>
+				<tr>
+					<th>Winner</th>
+					<th>Creator</th>
+					<th>Opponent</th>
+					<th>Completed Time</th>
+					<th>Created Time</th>
+				</tr>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+	</div>
+
+	<div class="col-1"></div>
+</div>
+	
 
 {% endblock %}
 

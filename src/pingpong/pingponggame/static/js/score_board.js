@@ -5,7 +5,7 @@ function updateGameInfo(data) {
         for (var i = 0; i < data.games.length; i++) {
             var gameRecord = data.games[i];
             console.log(gameRecord.html);
-            $('#scoreboard').prepend(gameRecord.html);
+            $('#scoreboard').find('tbody').prepend(gameRecord.html);
         }
     }
 }

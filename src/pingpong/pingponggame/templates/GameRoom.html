@@ -21,21 +21,29 @@
     <input type='hidden' id='player' value="{{player}}">
     <input type='hidden' id='game' value="{{game}}">
     <div class="row">
-		<div class="col-6">
-			<p>This is game room</p>
-            Your game room id is: <br>
-            {{game}} <br>
+        <div class="col-2"></div>
+		<div class="col-3">
+            Your game room id is:
+            {{game}} 
+            <br>
+            <br>
             <button id='win_but'>Press To Win</button>
-		</div>
-	    <div class="col-6">
-            <div id="creator">
+        </div>
+        
+        <div class="col-2"></div>
+
+	    <div class="col-3">
+            <p>Player 1</p>
+            <div id="creator" class="block">
                 <div></div>
             </div>
-               
-            <div id="opponent">
+
+            <p>Player 2</p>
+            <div id="opponent" class="block">
                 <div></div>
             </div>
         </div>
+        <div class="col-2"></div>
 
         
     </div>
