@@ -8,9 +8,10 @@ from django.db import transaction
 @channel_session_user_from_http
 @transaction.atomic
 # Connected to websocket.connect
-def ws_add(message):
+def ws_add(message, room_id):
     player = Player.objects.get(user=message.user)
-
+    print(room_id)
+    print('haha')
     # When current player does not exist or do not have a current game
     if not player or not player.current_game:
         message.reply_channel.send({"accept": False})
@@ -34,7 +35,7 @@ def ws_add(message):
 
 @channel_session_user
 # Connected to websocket.receive
-def ws_message(message):
+def ws_message(message, room_id):
     player = Player.objects.get(user=message.user)
     game = player.current_game
     data = json.loads(message['text'])
@@ -55,7 +56,7 @@ def ws_message(message):
 @channel_session_user
 @transaction.atomic
 # Connected to websocket.disconnect
-def ws_disconnect(message):
+def ws_disconnect(message, room_id):
     print("some one leaves")
     player = Player.objects.get(user=message.user)
     game = player.current_game
