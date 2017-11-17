@@ -21,30 +21,36 @@
     <input type='hidden' id='player' value="{{player}}">
     <input type='hidden' id='game' value="{{game}}">
     <div class="row">
-        <div class="col-2"></div>
 		<div class="col-3">
             Your game room id is:
             {{game}} 
             <br>
             <br>
             <button id='win_but'>Press To Win</button>
-        </div>
-        
-        <div class="col-2"></div>
-
-	    <div class="col-3">
+            <br><br>
             <p>Player 1</p>
             <div id="creator" class="block">
                 <div></div>
             </div>
-
             <p>Player 2</p>
             <div id="opponent" class="block">
                 <div></div>
             </div>
         </div>
-        <div class="col-2"></div>
-
         
+        <div class="col-9">
+
+            <class class="loading" style="z-index: -1;">Loading...</class>
+
+        </div>
+
     </div>
+
+    <script src="{% static 'js/timeout.js' %}"></script>
+    <script src="{% static 'js/p2.js' %}"></script>
+    <script src="{% static 'js/stage.web.js' %}"></script>
+    <script src="{% static 'js/stage-p2.js' %}"></script>
+    <script src="{% static 'js/example.js' %}"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/texture.js' %}"></script>
 {% endblock %}

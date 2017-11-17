@@ -52,6 +52,7 @@ def registration(request):
 @transaction.atomic
 @login_required	
 def main(request):
+	print("hererer");
 	context = {}
 	player = get_object_or_404(Player, user=request.user)
 	context['form'] = JoinRoomForm()
