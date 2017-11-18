@@ -2,6 +2,7 @@ var P2DEBUG = false;
 
 var paddle;
 var paddle2;
+var ball;
 
 function Physics(ui, width, height) {
 
@@ -281,7 +282,7 @@ function Physics(ui, width, height) {
   };
 
   this.startGame = function() {
-    var ball = findBall();
+    ball = findBall();
     var a = Math.PI * Math.random() * 0.4 - 0.2;
     var speed = ui.ballSpeed();
     ball.velocity = [ speed * Math.sin(a), speed * Math.cos(a) ];
@@ -532,6 +533,14 @@ Stage(function(stage) {
     e = e || window.event;
     keyboard.down(e.code);
     console.log(e.code);
+    // console.log(paddle.position[0]);
+    // console.log(paddle.position[1]);
+    // console.log('ball');
+    // console.log(ball.position[0]);
+    // console.log(ball.position[1]);
+    // console.log(ball.velocity[0]);
+    // console.log(ball.velocity[1]);    
+    // console.log('here!!!!!!!!!!');
   };
   // document.onkeyup = function(e) {
   //   e = e || window.event;
@@ -648,31 +657,6 @@ Stage(function(stage) {
     return 8000 - 20 * state.score;
   }
 
-  // function addRow() {
-  //   var row = [];
-  //   for (var i = 0; i < 7; i++) {
-  //     if (Math.random() < 0.1) {
-  //       row.push({
-  //         type : 'none'
-  //       });
-  //       continue;
-  //     }
-  //     var color = [ 'b', 'r', 'y', 'g', 'p' ][Math.random() * 5 | 0];
-  //     var one = state.score + 1, four = Math.max(0, state.score * 1.1 - 60);
-  //     if (Math.random() < one / (four + one)) {
-  //       row.push({
-  //         type : 'normal',
-  //         color : color
-  //       });
-  //     } else {
-  //       row.push({
-  //         type : 'small',
-  //         color : color
-  //       });
-  //     }
-  //   }
-  //   physics.addRow(row);
-  // }
 
   function dropDown(brick) {
     var random = Math.random();
@@ -682,5 +666,26 @@ Stage(function(stage) {
       physics.dropDown(brick, '-');
     }
   }
+
+  console.log("!!!!!!!!!!!!!!!!")
+
+
+  function sendPosition() {
+    console.log('hihi$$$$$$$$$$4');
+    console.log(paddle.position[0]);
+    console.log(paddle.position[1]);
+    console.log(paddle2.position[0]);
+    console.log(paddle2.position[1]);
+    console.log('ball');
+    console.log(ball.position[0]);
+    console.log(ball.position[1]);
+    console.log(ball.velocity[0]);
+    console.log(ball.velocity[1]);    
+    console.log('here!!!!!!!!!!');
+  }
+
+  $( document ).ready(function() { 
+    window.setInterval(sendPosition, 300);
+  })
 
 });

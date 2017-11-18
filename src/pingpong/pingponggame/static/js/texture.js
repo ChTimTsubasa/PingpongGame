@@ -1,8 +1,8 @@
 
 Stage({
-  image : { src : './bg.png', ratio : 5 },
+  image : { src : './bg.png', ratio : 2 },
   textures : {
-    'board' : { x : 0, y : -200,  width : 300, height : 300 }
+    'board' : { x : 0, y : 0,  width : 320, height : 416 }
   }
 });
 
