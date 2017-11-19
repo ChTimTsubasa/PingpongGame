@@ -47,9 +47,9 @@ function Physics(ui, width, height) {
       [ -1.8, -0.1 ] ]);
   fullPaddleShape.material = paddleMater;
 
-  var miniPaddleShape = new p2.Convex([ [ 1.2, -0.1 ], [ 1.2, 0.1 ],
-      [ 0.9, 0.4 ], [ 0.2, 0.6 ], [ -0.2, 0.6 ], [ -0.9, 0.4 ], [ -1.2, 0.1 ],
-      [ -1.2, -0.1 ] ]);
+  var miniPaddleShape = new p2.Convex( [ [ 1.8, -0.1 ], [ 1.8, 0.1 ],
+      [ 1.2, 0.4 ], [ 0.4, 0.6 ], [ -0.4, 0.6 ], [ -1.2, 0.4 ], [ -1.8, 0.1 ],
+      [ -1.8, -0.1 ] ]);
   miniPaddleShape.material = paddleMater;
 
   var BALL = 1, WALL = 2, BRICK = 4, DROP = 8;
@@ -91,7 +91,7 @@ function Physics(ui, width, height) {
   world.addBody(rightWall);
 
   var topWall = new p2.Body({
-    position : [ 0, +9 ],
+    position : [ 0, +12.5 ],
     mass : 0
   });
   topWall.addShape(hwallShape);
