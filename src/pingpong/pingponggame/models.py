@@ -160,3 +160,40 @@ class Game(models.Model):
 	@property
 	def html(self):
 		return render_to_string("Game.html", {"game":self}).replace("\n", "")
+
+class GameObject(models.Model):
+	position_X = models.FloatField()
+	position_Y = models.FloatField()
+	velocity_X = models.FloatField()
+	velocity_Y = models.FloatField()
+	inverse = models.BooleanField()
+
+class Pad(GameObject):
+	def __init__(self, message):
+		self.position_X = message['pad_p'][0]
+		self.position_Y = message['pad_p'][1]
+		self.velocity_X = message['pad_v'][0]
+		self.velocity_Y = message['pad_v'][1]
+
+	def message(self):
+		content = {
+			'TYPE': 'pad',
+			'pad_p': [self.position_X, self.position_Y],
+			'pad_v': [self.velocity_X, self.velocity_Y],
+		}
+		return content
+
+class Ball(GameObject):
+	def __init__(self, message):
+		self.position_X = message['ball_p'][0]
+		self.position_Y = message['ball_p'][1]
+		self.velocity_X = message['ball_v'][0]
+		self.velocity_Y = message['ball_v'][1]
+	
+	def message(self):
+		content = {
+			'TYPE': 'ball',
+			'ball_p': [self.position_X, self.position_Y],
+			'ball_v': [self.velocity_X, self.velocity_Y],
+		}
+		return content

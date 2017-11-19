@@ -1,10 +1,12 @@
-from channels.routing import route
-from pingponggame.consumers import ws_add, ws_disconnect, ws_message
+from channels.routing import route, route_class
+from pingponggame.consumers import GameServer
+from channels import include
 
+game_routing = [
+    route_class(GameServer, path = '^/(?P<room_id>[a-zA-Z0-9_]+)$')
+]
 
-channel_routing = [
-	#When user open gameroom.html
-    route('websocket.connect', ws_add, path='^/(?P<room_id>[a-zA-Z0-9_]+)$'),
-    route('websocket.receive', ws_message, path='^/(?P<room_id>[a-zA-Z0-9_]+)$'),
-    route('websocket.disconnect', ws_disconnect, path='^/(?P<room_id>[a-zA-Z0-9_]+)$'),
+routing = [
+    # You can use a string import path as the first argument as well.
+    include(game_routing, path = r'^/game'),
 ]

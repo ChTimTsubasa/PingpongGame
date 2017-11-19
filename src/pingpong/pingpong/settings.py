@@ -136,6 +136,13 @@ CHANNEL_LAYERS = {
         'CONFIG': {
             'hosts': [('localhost', 6379)],
         },
-        'ROUTING': 'pingpong.routing.channel_routing',
+        'ROUTING': 'pingpong.routing.routing',
+    }
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "redis_cache.RedisCache",
+        'LOCATION': 'localhost:6379',
     }
 }
