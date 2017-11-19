@@ -55,6 +55,24 @@ class Player(models.Model):
 # TODO add the source of reference
 # Game Model
 class Game(models.Model):
+	JOIN_STATE = 0
+	READY_STATE = 1
+	START_STATE = 2
+	GAMING_STATE = 3
+	PAUSE_STATE = 4
+	END_STATE = 5
+
+	GAME_STATE = (
+		(JOIN_STATE, 'Join'),
+		(READY_STATE, 'Ready'),
+		(START_STATE, 'Start'),
+		(GAMING_STATE, 'Gaming'),
+		(PAUSE_STATE, 'Pause'),
+		(END_STATE, 'End'),
+	)
+
+	state = models.IntegerField(choices=GAME_STATE, default=JOIN_STATE)
+
     # Players
 	winner = models.ForeignKey(Player, related_name='winner', null=True, blank=True)
 	creator = models.ForeignKey(Player, related_name='creator')
@@ -161,29 +179,30 @@ class Game(models.Model):
 	def html(self):
 		return render_to_string("Game.html", {"game":self}).replace("\n", "")
 
-class GameObject(models.Model):
-	position_X = models.FloatField()
-	position_Y = models.FloatField()
-	velocity_X = models.FloatField()
-	velocity_Y = models.FloatField()
-	inverse = models.BooleanField()
-
-class Pad(GameObject):
+class Pad():
+	position_X = 0.0
+	position_Y = 0.0
+	time_stamp = 0
 	def __init__(self, message):
-		self.position_X = message['pad_p'][0]
-		self.position_Y = message['pad_p'][1]
-		self.velocity_X = message['pad_v'][0]
-		self.velocity_Y = message['pad_v'][1]
+		self.position_X = message['x']
+		self.position_Y = message['y']
+		self.time_stamp = message['ts']
+
+	def update(self, message):
+		self.position_X = message['x']
+		self.position_Y = message['y']
+		self.time_stamp = message['ts']
 
 	def message(self):
 		content = {
 			'TYPE': 'PAD',
-			'pad_p': [self.position_X, self.position_Y],
-			'pad_v': [self.velocity_X, self.velocity_Y],
+			'x': self.position_X,
+			'y': self.position_Y,
+			'ts': self.time_stamp,
 		}
 		return content
 
-class Ball(GameObject):
+class Ball(models.Model):
 	def __init__(self, message):
 		self.position_X = message['ball_p'][0]
 		self.position_Y = message['ball_p'][1]

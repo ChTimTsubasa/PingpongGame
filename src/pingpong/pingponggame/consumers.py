@@ -8,6 +8,8 @@ from django.db import transaction
 
 from .caching import GameCache
 
+import datetime
+
 class GameServer(JsonWebsocketConsumer):
     http_user_and_session = True
 
@@ -64,11 +66,8 @@ class GameServer(JsonWebsocketConsumer):
         """
         Called when a message is received with decoded JSON content
         """
-        print(self.message.user)
-        print(content)
-        response = self.game_handle(content)
-        print(response)
-
+        self.game_handle(content)
+        
     def disconnect(self, message, **kwargs):
         """
         Perform things on connection close
@@ -105,13 +104,12 @@ class GameServer(JsonWebsocketConsumer):
         elif c_type == 'PAD':
             user_id = self.message.user.id
             game_id = GameCache.get_game(user_id)
-            new_pad = GameCache.update_pad(user_id, content)
+            GameCache.update_pad(user_id, content)
             oppo_pad = GameCache.get_oppo_pad(user_id)
-            self.send(oppo_pad.message)
+            if oppo_pad:
+                self.send(oppo_pad.message())
 
         elif c_type == 'BALL':
             user_id = self.message.user.id
             game_id = GameCache.get_game(user_id)
-            
-            
-        return response
+

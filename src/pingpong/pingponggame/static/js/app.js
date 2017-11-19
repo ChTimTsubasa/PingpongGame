@@ -690,7 +690,6 @@ function sendPosition() {
 console.log('exmaple.js file game_room part!!!!!!!!!!');
 function handle(message) {
   // console.log(message)
-  console.log(message);
   switch (message.TYPE) {
     case 'STATE':
       if (message.STATE == 'ready') {
@@ -708,13 +707,17 @@ function handle(message) {
       }
 
     case 'PAD':
-      console.log(message)
+      paddle2.position[0] = -message.x;
+      paddle2.position[1] = -message.y;
+
       break;
     case 'BALL':
       console.log(message)
       break;
   }
 }
+
+
 
 //send requets to get player information inside room up-to-date
 function sendRequest() {
@@ -737,6 +740,16 @@ $(document).ready(function () {
   var game_id = $('#game').val()
   var socket = new WebSocket('ws://' + window.location.host + '/game/' + game_id);
 
+
+function sendPad() {
+  socket.send(JSON.stringify({
+    TYPE: "PAD",
+    x: paddle.position[0],
+    y: paddle.velocity[1],
+    ts: Math.floor(Date.now()),
+  }));
+}
+
   sendRequest();
   window.setInterval(sendRequest, 1000);
   var d = new Date();
@@ -747,6 +760,7 @@ $(document).ready(function () {
   }
 
   socket.onopen = function() {
+    window.setInterval(sendPad, 100);
   }
 
   socket.onclose = function() {
@@ -764,6 +778,13 @@ $(document).ready(function () {
 
       $('#win_but').prop('disabled', true);
   })
+
+
+// send the pad info to server
+
+
 });
+
+
 
 });

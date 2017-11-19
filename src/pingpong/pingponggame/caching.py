@@ -12,6 +12,7 @@ class GameCache():
 
     @staticmethod
     def init_game(user1, user2, game_id):
+        GameCache.delete_game(user1, user2)
         cache.set(str(user1) + OPPO_SUF, user2)
         cache.set(str(user2) + OPPO_SUF, user1)
         cache.set(str(user1) + GAME_SUF, game_id)
@@ -41,9 +42,15 @@ class GameCache():
 
     @staticmethod
     def update_pad(user_id, message):
-        # TODO do some authentication
-        pad = Pad(message)
-        cache.set(str(user_id) + PAD_SUF, pad)
+        pad = cache.get(str(user_id) + PAD_SUF)
+        if pad:
+            # Update only when the new message has larger time stamp
+            if pad.time_stamp < message['ts']:
+                pad.update(message) 
+                cache.set(str(user_id) + PAD_SUF, pad)
+        else :
+            pad = Pad(message)
+            cache.set(str(user_id) + PAD_SUF, pad)
 
     @staticmethod
     def update_ball(game_id, message):
