@@ -299,6 +299,7 @@ function Physics(ui, width, height) {
         world.removeBody(body);
       }
     }
+    // TODO: send a game end message
   };
 
   // this.addRow = function(row) {
@@ -689,21 +690,29 @@ function sendPosition() {
 console.log('exmaple.js file game_room part!!!!!!!!!!');
 function handle(message) {
   // console.log(message)
-  console.log(message.TYPE)
+  console.log(message);
   switch (message.TYPE) {
-      case 'STATE':
-          if (message.STATE == 'start') {
-              $('#win_but').prop('disabled', false);
-          } else {
-              $('#win_but').prop('disabled', true);
-          }
-          break;
-      case 'PAD':
-          console.log(message)
-          break;
-      case 'BALL':
-          console.log(message)
-          break;
+    case 'STATE':
+      if (message.STATE == 'ready') {
+        $('#win_but').prop('disabled', false);
+      } else if (message.STATE == 'unready') {
+        $('#win_but').prop('disabled', true);
+      } else if (message.STATE == 'start') {
+        console.log("start game now")
+        startGame();
+      }
+      break;
+  
+    case 'GAME':
+      if (message.STATE == 'start') {
+      }
+
+    case 'PAD':
+      console.log(message)
+      break;
+    case 'BALL':
+      console.log(message)
+      break;
   }
 }
 
@@ -750,7 +759,7 @@ $(document).ready(function () {
       console.log ("button clicked")
       socket.send(JSON.stringify({
           TYPE: "STATE",
-          state: 'ready',
+          STATE: 'start',
       }));
 
       $('#win_but').prop('disabled', true);

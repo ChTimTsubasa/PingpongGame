@@ -6,6 +6,8 @@ from .models import Player, Game
 
 from django.db import transaction
 
+from .caching import GameCache
+
 class GameServer(JsonWebsocketConsumer):
     http_user_and_session = True
 
@@ -20,10 +22,11 @@ class GameServer(JsonWebsocketConsumer):
         """
         print(self.message.user)
         player = Player.objects.get(user=self.message.user)
-        # When current player does not exist or do not have a current game
+        # When current player does exist and has a current game
         if player and player.current_game:
             game = player.current_game
-            return ["game_%s" % game.id]
+            group = GameCache.store_group(player.user.id)
+            return ["game_%s" % game.id, group]
 
     @transaction.atomic
     def connect(self, message, **kwargs):
@@ -44,26 +47,27 @@ class GameServer(JsonWebsocketConsumer):
         game = player.current_game
         game.player_ready()
         print(game.available_players)
-        
+
+        # Accept the connection; 
+        self.message.reply_channel.send({"accept": True})
+
         if game.available_players == 2:
-            response = {'TYPE': 'STATE', 'state': 'start'}
+            response = {'TYPE': 'STATE', 'STATE': 'ready'}
+            # Initialize the game
+            user1 = game.creator.user.id
+            user2 = game.opponent.user.id
+            GameCache.init_game(user1, user2, game.id)
             self.group_send('game_%s' % game.id, response)
 
-
-        # Accept the connection; this is done by default if you don't override
-        # the connect function.
-        self.message.reply_channel.send({"accept": True})
 
     def receive(self, content, **kwargs):
         """
         Called when a message is received with decoded JSON content
         """
-        # Simple echo
         print(self.message.user)
         print(content)
         response = self.game_handle(content)
         print(response)
-        self.send(response)
 
     def disconnect(self, message, **kwargs):
         """
@@ -94,9 +98,20 @@ class GameServer(JsonWebsocketConsumer):
         response = {}
 
         if c_type == 'STATE':
+            if content['STATE'] == 'start':
+                response = {'TYPE': 'STATE', 'STATE': 'start'}
+                self.send(response)
 
-            response = {'TYPE': 'STATE', 'STATE': 'stop'}
-        elif c_type == 'GAME':
-            response = {'': 'game'}
-        
+        elif c_type == 'PAD':
+            user_id = self.message.user.id
+            game_id = GameCache.get_game(user_id)
+            new_pad = GameCache.update_pad(user_id, content)
+            oppo_pad = GameCache.get_oppo_pad(user_id)
+            self.send(oppo_pad.message)
+
+        elif c_type == 'BALL':
+            user_id = self.message.user.id
+            game_id = GameCache.get_game(user_id)
+            
+            
         return response

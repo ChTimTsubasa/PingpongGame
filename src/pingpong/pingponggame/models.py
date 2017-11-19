@@ -177,7 +177,7 @@ class Pad(GameObject):
 
 	def message(self):
 		content = {
-			'TYPE': 'pad',
+			'TYPE': 'PAD',
 			'pad_p': [self.position_X, self.position_Y],
 			'pad_v': [self.velocity_X, self.velocity_Y],
 		}
@@ -192,7 +192,7 @@ class Ball(GameObject):
 	
 	def message(self):
 		content = {
-			'TYPE': 'ball',
+			'TYPE': 'BALL',
 			'ball_p': [self.position_X, self.position_Y],
 			'ball_v': [self.velocity_X, self.velocity_Y],
 		}
