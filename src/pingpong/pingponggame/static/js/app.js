@@ -4,6 +4,10 @@ var paddle;
 var paddle2;
 var ball;
 
+
+console.log('generating app.js!!!!!!!!!!');
+
+
 function Physics(ui, width, height) {
 
   var world = this.world = new p2.World({
@@ -87,7 +91,7 @@ function Physics(ui, width, height) {
   world.addBody(rightWall);
 
   var topWall = new p2.Body({
-    position : [ 0, +12 ],
+    position : [ 0, +9 ],
     mass : 0
   });
   topWall.addShape(hwallShape);
@@ -95,7 +99,7 @@ function Physics(ui, width, height) {
   world.addBody(topWall);
 
   var bottomWall = new p2.Body({
-    position : [ 0, -13 ],
+    position : [ 0, -10 ],
     mass : 0
   });
   bottomWall.addShape(hwallShape);
@@ -104,7 +108,7 @@ function Physics(ui, width, height) {
   world.addBody(bottomWall);
 
   var fullPaddle = new p2.Body({
-    position : [ 0, -10.5 ],
+    position : [ 0, -7 ],
     mass : 0
   });
 
@@ -127,7 +131,7 @@ function Physics(ui, width, height) {
 
 
   var miniPaddle = new p2.Body({
-    position : [ 0, 9.5 ],
+    position : [ 0, 7 ],
     mass : 0
   });
   miniPaddle.paddleWidth = 2;
@@ -411,7 +415,6 @@ function Physics(ui, width, height) {
 }
 
 Stage(function(stage) {
-
   var Mouse = Stage.Mouse;
   var STORE_KEY = 'breakout-v1';
 
@@ -667,25 +670,99 @@ Stage(function(stage) {
     }
   }
 
-  console.log("!!!!!!!!!!!!!!!!")
+console.log('send position in generating app.js!!!!!!!!!!');
+
+function sendPosition() {
+  console.log('hihi-------------------');
+  console.log(paddle.position[0]);
+  console.log(paddle.position[1]);
+  console.log(paddle2.position[0]);
+  console.log(paddle2.position[1]);
+  console.log('ball');
+  console.log(ball.position[0]);
+  console.log(ball.position[1]);
+  console.log(ball.velocity[0]);
+  console.log(ball.velocity[1]);    
+  console.log('here!!!!!!!!!!');
+}
+
+console.log('exmaple.js file game_room part!!!!!!!!!!');
+
+function handle(message) {
+    console.log(message)
+    if (message.TYPE == 'STATE') {
+        if (message.state == 'ready') {
+            $('#win_but').prop('disabled', false);
+        } else {
+            $('#win_but').prop('disabled', true);
+        }
+    } else if (message.TYPE == "GAME") {
+        alert('winner is ' + message.winner);
+    }
+}
+
+//send requets to get player information inside room up-to-date
+function sendRequest() {
+    gameid = $('#game').val();
+    $.getJSON("getPlayersInfo/"+gameid, function(data) {
+        updatePlayerInfo(data);
+    });
+}
+
+//Update player information in web page
+function updatePlayerInfo(data) {
+    players = data.players;
+    console.log(players);
+
+    $('#creator').html(players[0].html);
+    $('#opponent').html(players[1].html);
+}
 
 
-  function sendPosition() {
-    console.log('hihi$$$$$$$$$$4');
-    console.log(paddle.position[0]);
-    console.log(paddle.position[1]);
-    console.log(paddle2.position[0]);
-    console.log(paddle2.position[1]);
-    console.log('ball');
-    console.log(ball.position[0]);
-    console.log(ball.position[1]);
-    console.log(ball.velocity[0]);
-    console.log(ball.velocity[1]);    
-    console.log('here!!!!!!!!!!');
-  }
+$(document).ready(function () {
+    console.log('game room ready')
 
-  $( document ).ready(function() { 
-    window.setInterval(sendPosition, 300);
-  })
+    setTimeout(function() {
+        console.log('timeout done');
+        var socket = new WebSocket('ws://' + window.location.host);
+        sendRequest();
+        window.setInterval(sendRequest, 1000);
+
+        window.setInterval(sendPosition, 300);
+        // window.setInterval(findBrick, 300);
+
+
+        socket.onmessage = function(e) {
+            var data = jQuery.parseJSON(e.data)
+            handle(data);
+        }
+
+        socket.onopen = function() {
+            // socket.send("hello world");
+        }
+
+        socket.onclose = function() {
+            socket.close();
+        }
+
+        $('#win_but').prop('disabled', true);
+
+        $('#win_but').click(function() {
+            console.log ("button clicked")
+            socket.send(JSON.stringify({
+                TYPE: "GAME",
+                score: Math.floor(1 + Math.random() * 10)
+            }));
+
+            $('#win_but').prop('disabled', true);
+        })
+    }
+    , 1000);
+    
+});
+
+  // $( document ).ready(function() { 
+  //   window.setInterval(sendPosition, 300);
+  // })
 
 });

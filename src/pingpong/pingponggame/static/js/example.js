@@ -1,7 +1,6 @@
 (function() {
 
-
-  console.log('22222222222222222222');
+  console.log('example.js file !!!22222222222222222222');
 
   var body = document.body;
   var loading = document.createElement('class');
@@ -14,9 +13,20 @@
     loading.style.zIndex = 0;
   }
   body.insertBefore(loading, body.firstChild);
+
+// function playerUpdate() {
+//     var creator_id = data.players[0].creator_id;
+//     var ori_creator = $("#creator").children('div');
+//     if (creator_id != "") {
+//         ori_creator.replaceWith(data.players[0].html);
+//     }
+// }
+
 })();
 
 var status = (function() {
+
+  console.log('22222222222222222222');
   var el = null;
   return function(msg) {
     if (el === null) {

@@ -2,7 +2,7 @@
 Stage({
   image : { src : './bg.png', ratio : 2 },
   textures : {
-    'board' : { x : 0, y : 0,  width : 320, height : 416 }
+    'board' : { x : 0, y : 0,  width : 320, height : 320 }
   }
 });
 
