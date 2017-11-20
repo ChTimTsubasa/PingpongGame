@@ -16,6 +16,27 @@ function sendReady() {
   }))
 }
 
+function sendBall() {
+  socket.send(JSON.stringify({
+    TYPE: "BALL",
+    p_x: ball.position[0],
+    p_y: ball.position[1],
+    v_x: ball.velocity[0],
+    v_y: ball.velocity[1],
+  }))
+}
+
+
+function sendPad() {
+  socket.send(JSON.stringify({
+    TYPE: "PAD",
+    x: paddle.position[0],
+    y: paddle.position[1],
+    ts: Math.floor(Date.now()),
+  }));
+}
+
+
 function Physics(ui, width, height) {
 
   var world = this.world = new p2.World({
@@ -178,13 +199,6 @@ function Physics(ui, width, height) {
       neo.velocity[0] = paddle.velocity[0];
       world.addBody(paddle = neo);
     }
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //   if (paddle2 !== neo) {
-  //     world.removeBody(paddle2);
-  //     neo.position[0] = paddle2.position[0];
-  //     neo.velocity[0] = paddle2.velocity[0];
-  //     world.addBody(paddle2 = neo);
-  //   }
   }
 
   function makeBall(pos) {
@@ -269,6 +283,8 @@ function Physics(ui, width, height) {
 
       } else if (paddle) {
         ui.hitPaddle(paddle);
+        console.log('hit pad');
+        sendBall();
       }
     }
   });
@@ -719,13 +735,13 @@ function handle(message) {
           ball.velocity[1] = -ball.velocity[1];
         }
 
-        // window.setImmediate(sendPad, 100);
+        window.setInterval(sendPad, 100);
       }
       break;
 
     case 'PAD':
       paddle2.position[0] = -message.x;
-      paddle2.position[1] = -message.y;
+      // paddle2.position[1] = message.y;
       break;
     case 'BALL':
       ball.position[0] = -message.p_x;
@@ -755,26 +771,6 @@ function updatePlayerInfo(data) {
 $(document).ready(function () {
   var game_id = $('#game').val()
   socket = new WebSocket('ws://' + window.location.host + '/game/' + game_id);
-
-function sendPad() {
-  socket.send(JSON.stringify({
-    TYPE: "PAD",
-    x: paddle.position[0],
-    y: paddle.velocity[1],
-    ts: Math.floor(Date.now()),
-  }));
-}
-
-function sendBall() {
-  socket.send(JSON.stringify({
-    TYPE: "BALL",
-    p_x: ball.position[0],
-    p_y: ball.position[1],
-    v_x: ball.velocity[0],
-    v_y: ball.velocity[1],
-  }))
-}
-
 
   sendRequest();
   window.setInterval(sendRequest, 1000);
@@ -810,7 +806,5 @@ function sendBall() {
 
 
 });
-
-
 
 });
