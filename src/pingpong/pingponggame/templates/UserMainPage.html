@@ -39,8 +39,8 @@
 		<div class="col-2"></div>
 		<div class="col-5">
 			<span class="largertext"> Start Play Your Game! </span>
-			<br>
-			<div class="block">
+			<br> <br>
+			<!-- <div class="block"> -->
 				<div class="subblock">
 					<p class="normaltext">Create your own room</p>
 					<form method="get" action="{% url 'createRoom' %}">
@@ -48,7 +48,7 @@
 						<button class='btn' type="submit">Create</button>
 					</form>
 				</div>
-				
+				<br>
 				<div class="subblock">
 					<p class="normaltext"> Randomly Join a room </p>
 					<form method="get" action="{% url 'joinRoom' %}">
@@ -56,6 +56,7 @@
 						<button class='btn' type="submit">Shuffle</button>
 					</form>
 				</div>
+				<br>
 				<div class="subblock">
 					<p class="normaltext">Join a room given an ID</p>
 					<form class="normaltext" method="post" action="{% url 'joinRoom' %}">
@@ -73,7 +74,7 @@
 					</form>
 				</div>
 				
-			</div>
+			<!-- </div> -->
 		</div>
 
 		<div class="col-2"></div>

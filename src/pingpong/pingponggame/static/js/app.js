@@ -278,8 +278,8 @@ function Physics(ui, width, height) {
         ui.hitBrick(brick);
         
       } else if (bottom) {
-        world.removeBody(ball);
-        ui.hitBottom(bottom);
+        // world.removeBody(ball);
+        // ui.hitBottom(bottom);
 
       } else if (paddle) {
         ui.hitPaddle(paddle);

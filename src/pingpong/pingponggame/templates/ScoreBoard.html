@@ -9,14 +9,14 @@
 <div class="row">
 	<div class="col-1"></div>
 	<div class="col-3">
-		<h4>User Name: {{current_user.username}}</h4>
-		<h4>First Name: {{current_user.first_name}}</h4>
-		<h4>Last Name: {{current_user.last_name}}</h4> <br>
+		<span class="boldtext">User Name:</span> <span class="normaltext">{{current_user.username}}</span><br>
+		<span class="boldtext" >First Name:</span> <span class="normaltext">{{current_user.first_name}}</span><br>
+		<span class="boldtext">Last Name:</span>  <span class="normaltext">{{current_user.last_name}}</span><br>
 	</div>
 	<div class="col-7 block scoreboard">
-		<h4>Score Board:</h4> <br>
+		<span class="largertext">Score Board:</span> <br>
 		<input id='latest_game', type='hidden' value = '-1'>
-		<table id="scoreboard" border="1">
+		<table id="scoreboard" class="normaltext" border="1">
 			<thead>
 				<tr>
 					<th>Winner</th>
