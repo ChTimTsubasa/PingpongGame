@@ -56,6 +56,7 @@ class GameCache():
     def update_ball(game_id, message):
         ball = Ball(message)
         cache.set(str(game_id) + BALL_SUF, ball)
+        return ball
 
     @staticmethod
     def get_oppo_pad(user_id):

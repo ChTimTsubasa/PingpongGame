@@ -43,16 +43,15 @@ class GameServer(JsonWebsocketConsumer):
             message.reply_channel.send({"accept": False})
             return
         
-        message.reply_channel.send({"accept": True})
         #available_players means how many players connect to the current game room
         game = player.current_game
         game.player_ready()
-        print(game.available_players)
-
         # Accept the connection; 
-        self.message.reply_channel.send({"accept": True})
-
+        message.reply_channel.send({"accept": True})
+        
         if game.available_players == 2:
+            game.available_players = 0
+            game.state = Game.READY_STATE
             response = {'TYPE': 'STATE', 'STATE': 'ready'}
             # Initialize the game
             user1 = game.creator.user.id
@@ -65,44 +64,54 @@ class GameServer(JsonWebsocketConsumer):
         """
         Called when a message is received with decoded JSON content
         """
-        self.game_handle(content)
-        
-    def disconnect(self, message, **kwargs):
-        """
-        Perform things on connection close
-        """
-        print("some one leaves")
-        player = Player.objects.get(user=message.user)
+        if content['TYPE'] == 'STATE':
+            self.state_handle(content)
+        else:
+            self.game_handle(content)
+    
+    def state_handle(self, content):
+        player = Player.objects.get(user=self.message.user)
         game = player.current_game
-        # this game is over
-        if game.winner:
-            print("game is already over~")
-            return
-        game.player_gone()
-        player.leave_game()
-        print (game.available_players)
-        Group("game_%s" % game.id).discard(message.reply_channel)
-        Group("game_%s" % game.id).send({
-                "text": json.dumps({
-                    "TYPE": "STATE",
-                    "STATE": "stop",
-                }),
-            })
+        if content['STATE'] == 'start':
+            game.player_ready()
+            if game.available_players == 2:
+                game.state = Game.GAMING_STATE
+                game.save()
+                response = {'TYPE': 'STATE', 'STATE': 'start'}
+                user1 = game.creator.user.id
+                user2 = game.creator.user.id
+                # user 1 should be positive
+                response[str(user1)] = 1
+                # user 2 should be negative
+                response[str(user2)] = -1
+                self.group_send('game_%s' % game.id, response)
+        
+        # There may be race issue here
+        elif content['STATE'] == 'score':
+            game.add_oppo_player_score(player)
+            if game.creator_score == 3 or game.opponent_score == 3:
+                game.state = Game.END_STATE
+                winner = game.determine_winner()
+                response = {'TYPE': 'STATE', 'STATE': 'end', 'WINER': winer.user.id}
+                self.group_send('game_%s' % game.id, response)
+                GameCache.delete_game(
+                                game.creator.user.id
+                                game.opponent.user.id
+                            )
 
-        pass
+            else:
+                game.state = Game.PAUSE_STATE
+                game.available_players = 0            
+                game.save()
+                response = {'TYPE': 'STATE', 'STATE': 'pause'}
+                self.group_send('game_%s' % game.id, response)
 
     def game_handle(self, content):
         c_type = content['TYPE']
         response = {}
 
-        if c_type == 'STATE':
-            if content['STATE'] == 'start':
-                response = {'TYPE': 'STATE', 'STATE': 'start'}
-                self.send(response)
-
-        elif c_type == 'PAD':
+        if c_type == 'PAD':
             user_id = self.message.user.id
-            game_id = GameCache.get_game(user_id)
             GameCache.update_pad(user_id, content)
             oppo_pad = GameCache.get_oppo_pad(user_id)
             if oppo_pad:
@@ -111,4 +120,20 @@ class GameServer(JsonWebsocketConsumer):
         elif c_type == 'BALL':
             user_id = self.message.user.id
             game_id = GameCache.get_game(user_id)
+            oppo_group = GameCache.get_oppo_group(user_id)
+            ball = GameCache.update_ball(game_id, content)
+            self.group_send(oppo_group, ball.message())
 
+
+    def disconnect(self, message, **kwargs):
+        """
+        Perform things on connection close
+        """
+        player = Player.objects.get(user=message.user)
+        game = player.current_game
+        # this game is over
+        game.player_gone()
+        player.leave_game()
+        print (game.available_players)
+        Group("game_%s" % game.id).discard(message.reply_channel)
+        

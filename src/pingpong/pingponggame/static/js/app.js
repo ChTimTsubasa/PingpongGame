@@ -704,20 +704,21 @@ function handle(message) {
   
     case 'GAME':
       if (message.STATE == 'start') {
+        // Start the game
       }
 
     case 'PAD':
       paddle2.position[0] = -message.x;
       paddle2.position[1] = -message.y;
-
       break;
     case 'BALL':
-      console.log(message)
+      ball.position[0] = -message.p_x;
+      ball.position[1] = -message.p_y;
+      ball.velocity[0] = -message.v_x;
+      ball.velocity[1] = -message.v_y;
       break;
   }
 }
-
-
 
 //send requets to get player information inside room up-to-date
 function sendRequest() {
@@ -730,7 +731,6 @@ function sendRequest() {
 //Update player information in web page
 function updatePlayerInfo(data) {
   players = data.players;
-  // console.log(players);
 
   $('#creator').html(players[0].html);
   $('#opponent').html(players[1].html);
@@ -748,6 +748,16 @@ function sendPad() {
     y: paddle.velocity[1],
     ts: Math.floor(Date.now()),
   }));
+}
+
+function sendBall() {
+  socket.send(JSON.stringify({
+    TYPE: "BALL",
+    p_x: ball.position[0],
+    p_y: ball.position[0],
+    v_x: ball.velocity[0],
+    v_y: ball.velocity[0],
+  }))
 }
 
   sendRequest();

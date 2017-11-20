@@ -57,15 +57,13 @@ class Player(models.Model):
 class Game(models.Model):
 	JOIN_STATE = 0
 	READY_STATE = 1
-	START_STATE = 2
-	GAMING_STATE = 3
-	PAUSE_STATE = 4
-	END_STATE = 5
+	GAMING_STATE = 2
+	PAUSE_STATE = 3
+	END_STATE = 4
 
 	GAME_STATE = (
 		(JOIN_STATE, 'Join'),
 		(READY_STATE, 'Ready'),
-		(START_STATE, 'Start'),
 		(GAMING_STATE, 'Gaming'),
 		(PAUSE_STATE, 'Pause'),
 		(END_STATE, 'End'),
@@ -152,21 +150,19 @@ class Game(models.Model):
 		self.available_players = self.available_players - 1
 		self.save()
 
-	def set_player_score(self, player, score):
-		if player == self.creator:
-			self.creator_score = score
+	def add_oppo_player_score(self, player):
+		if player != self.creator:
+			self.creator_score = self.creator_score + 1
 			self.save()
 			print('c')
-		elif player == self.opponent:
-			self.opponent_score = score
+		elif player != self.opponent:
+			self.opponent_score = self.opponent_score + 1
 			self.save()
 			print('o')
 	
 	def determine_winner(self):
 		print(self.creator_score)
 		print(self.opponent_score)
-		if self.creator_score != 3 or self.opponent_score != 3:
-			return None
 		if self.creator_score >= self.opponent_score:
 			print("here")
 			self.mark_complete(self.creator)
@@ -174,22 +170,6 @@ class Game(models.Model):
 			print("here2")
 			self.mark_complete(self.opponent)
 		return self.winner
-
-	def state_handle(self):
-		if self.state == JOIN_STATE:
-			pass
-		elif self.state == READY_STATE:
-			pass
-		elif self.state == START_STATE:
-			pass
-		elif self.state == GAMING_STATE:
-			pass
-		elif self.state == PAUSE_STATE:
-			pass
-		elif self.state == END_STATE:
-			pass
-		else:
-			pass
 
 	@property
 	def html(self):
@@ -220,15 +200,17 @@ class Pad():
 
 class Ball(models.Model):
 	def __init__(self, message):
-		self.position_X = message['ball_p'][0]
-		self.position_Y = message['ball_p'][1]
-		self.velocity_X = message['ball_v'][0]
-		self.velocity_Y = message['ball_v'][1]
+		self.position_X = message['p_x']
+		self.position_Y = message['p_y']
+		self.velocity_X = message['v_x']
+		self.velocity_Y = message['v_y']
 	
 	def message(self):
 		content = {
 			'TYPE': 'BALL',
-			'ball_p': [self.position_X, self.position_Y],
-			'ball_v': [self.velocity_X, self.velocity_Y],
+			'p_x': self.position_X,
+			'p_y': self.position_Y,
+			'v_x': self.velocity_X, 
+			'v_y': self.velocity_Y,
 		}
 		return content
