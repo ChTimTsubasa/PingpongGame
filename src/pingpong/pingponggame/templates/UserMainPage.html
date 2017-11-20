@@ -27,47 +27,49 @@
 		<p class="alert">{{error}}</p>
 	{% endfor %}
 	<div class="row">
-		<div class="col-2"></div>
+
 		<div class="col-3">
-			<div class="block">
-				<p>User Name: {{user.username}}</p>
-				<p>First Name: {{user.first_name}}</p>
-				<p>Last Name: {{user.last_name}}</p>
-				<p>Nick Name: {{player.nickname}}</p>
+			<div class="block normaltext">
+				<p><span class="boldtext ">User Name:</span> <span class="normaltext">{{user.username}}</span></p>
+				<p><span class="boldtext ">First Name:</span> <span class="normaltext">{{user.first_name}}</span> </p>
+				<p><span class="boldtext ">Last Name:</span> <span class="normaltext">{{user.last_name}}</span></p>
+				<p><span class="boldtext ">Nick Name:</span> <span class="normaltext">{{player.nickname}}</span></p>
 			</div>
 		</div>
+		<div class="col-2"></div>
 		<div class="col-5">
+			<span class="largertext"> Start Play Your Game! </span>
+			<br>
 			<div class="block">
-				<h1> Start Play Your Game! </h1>
 				<div class="subblock">
-					<p>Create your own room</p>
+					<p class="normaltext">Create your own room</p>
 					<form method="get" action="{% url 'createRoom' %}">
 						{% csrf_token %}
-						<button class='my_btn_primary' type="submit">Create</button>
+						<button class='btn' type="submit">Create</button>
 					</form>
 				</div>
 				
 				<div class="subblock">
-					<p> Randomly Join a room </p>
+					<p class="normaltext"> Randomly Join a room </p>
 					<form method="get" action="{% url 'joinRoom' %}">
 						{% csrf_token %}
-						<button class='my_btn_primary' type="submit">Shuffle</button>
+						<button class='btn' type="submit">Shuffle</button>
 					</form>
 				</div>
 				<div class="subblock">
-					<p>Join a room given an ID</p>
-					<form method="post" action="{% url 'joinRoom' %}">
+					<p class="normaltext">Join a room given an ID</p>
+					<form class="normaltext" method="post" action="{% url 'joinRoom' %}">
 						{% csrf_token %}
 						<table>
 							{% for field in form.visible_fields %}
 							<tr>
-								<td>game id</td>
-								<td>{{field}}</td>
+								<td class="smalltext">Game Id</td>
+								<td class="col-xs-2">{{field}}</td>
 								<td class="alert">{{field.errors}}</td>
 							</tr>
 							{% endfor %}						
 						</table>
-						<button class='my_btn_primary' type="submit">Join</button>
+						<button class='btn' type="submit">Join</button>
 					</form>
 				</div>
 				

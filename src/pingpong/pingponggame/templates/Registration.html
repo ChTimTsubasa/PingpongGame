@@ -3,56 +3,73 @@
 {% block title %}Registration page{% endblock %}
 
 {% block navbar %}
-
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item ">
+            <a class="nav-link whitetext" href="{% url 'login' %}"><h5>Log in</h5></a>
+        </li>                   
+    </ul>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item ">
+            <a class="nav-link whitetext" href="{% url 'logout' %}"><h5>Log Out</h5></a>
+        </li>                   
+    </ul>
 {% endblock %}
 
 {% block bodycontent %}
-	<form  class="form-signin" enctype="multipart/form-data" action="{% url 'registration' %}" method="POST">
-		{% for error in user_form.non_field_errors %}
-			<p class="alert">{{error}}</p>
-		{% endfor %}
-		{% for error in password_form.non_field_errors %}
-			<p class="alert">{{error}}</p>
-		{% endfor %}
-		{% for error in player_form.non_field_errors %}
-			<p class="alert">{{error}}</p>
-		{% endfor %}
-		<table>
-			
-			{% for field in user_form.visible_fields %}
-			<tr>
-			  <td>{{field.label_tag}}</td>
-			  <td>{{field}}</td>
-			  <td class="alert">{{field.errors}}</td>
-			</tr>
+<div class="row">
+	<div class="col-sm-3"> </div>
+	<div class="col-sm-6 normaltext"> 
+		<form  class="form-signin normaltext" enctype="multipart/form-data" action="{% url 'registration' %}" method="POST">
+			{% for error in user_form.non_field_errors %}
+				<p class="alert">{{error}}</p>
 			{% endfor %}
-
-			{% for field in password_form.visible_fields %}
-			<tr>
-			  <td>{{field.label_tag}}</td>
-			  <td>{{field}}</td>
-			  <td class="alert">{{field.errors}}</td>
-			</tr>
+			{% for error in password_form.non_field_errors %}
+				<p class="alert">{{error}}</p>
 			{% endfor %}
-			
-			{% for field in player_form.visible_fields %}
-			<tr>
-			  <td>{{field.label_tag}}</td>
-			  <td>{{field}}</td>
-			  <td class="alert">{{field.errors}}</td>
-			</tr>
-			{% endfor %}		
-		</table>
+			{% for error in player_form.non_field_errors %}
+				<p class="alert">{{error}}</p>
+			{% endfor %}
+			<table>
+				
+				{% for field in user_form.visible_fields %}
+				<tr>
+				  <td>{{field.label_tag}}</td>
+				  <td>{{field}}</td>
+				  <td class="alert">{{field.errors}}</td>
+				</tr>
+				{% endfor %}
 
-<!-- 		<input id="id_pic" name="picture" type="file"> -->
+				{% for field in password_form.visible_fields %}
+				<tr>
+				  <td>{{field.label_tag}}</td>
+				  <td>{{field}}</td>
+				  <td class="alert">{{field.errors}}</td>
+				</tr>
+				{% endfor %}
+				
+				{% for field in player_form.visible_fields %}
+				<tr>
+				  <td>{{field.label_tag}}</td>
+				  <td>{{field}}</td>
+				  <td class="alert">{{field.errors}}</td>
+				</tr>
+				{% endfor %}		
+			</table>
 
-		<button type="submit" class="btn">Register</button>		
-		{% csrf_token %}	
-	</form>	
-	
-	<div class="text-center">
-		<a class="btn" href="{% url 'login'%}">
+	<!-- 		<input id="id_pic" name="picture" type="file"> -->
+
+			<button type="submit" class="btn">Register</button>		
+			{% csrf_token %}	
+		</form>	
+		<br>
+		<a class="smalltext" href="{% url 'login'%}">
 			Already have one? Sign in
 		</a>
+		<br>
 	</div>
+	<div class="col-sm-3"> </div>
+	
+</div>
+
+
 {% endblock %}
