@@ -740,7 +740,10 @@ function handle(message) {
       break;
 
     case 'PAD':
+      console.log("x is ~~~~~~~");
+      console.log(message.x);
       paddle2.position[0] = -message.x;
+      console.log(paddle2.velocity);
       // paddle2.position[1] = message.y;
       break;
     case 'BALL':
