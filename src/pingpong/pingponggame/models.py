@@ -165,7 +165,7 @@ class Game(models.Model):
 	def determine_winner(self):
 		print(self.creator_score)
 		print(self.opponent_score)
-		if self.creator_score == 0 or self.opponent_score == 0:
+		if self.creator_score != 3 or self.opponent_score != 3:
 			return None
 		if self.creator_score >= self.opponent_score:
 			print("here")
@@ -174,6 +174,22 @@ class Game(models.Model):
 			print("here2")
 			self.mark_complete(self.opponent)
 		return self.winner
+
+	def state_handle(self):
+		if self.state == JOIN_STATE:
+			pass
+		elif self.state == READY_STATE:
+			pass
+		elif self.state == START_STATE:
+			pass
+		elif self.state == GAMING_STATE:
+			pass
+		elif self.state == PAUSE_STATE:
+			pass
+		elif self.state == END_STATE:
+			pass
+		else:
+			pass
 
 	@property
 	def html(self):

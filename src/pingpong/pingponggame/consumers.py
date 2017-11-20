@@ -44,7 +44,6 @@ class GameServer(JsonWebsocketConsumer):
             return
         
         message.reply_channel.send({"accept": True})
-        print(message.reply_channel)
         #available_players means how many players connect to the current game room
         game = player.current_game
         game.player_ready()
