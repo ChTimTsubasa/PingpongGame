@@ -4,6 +4,7 @@ var paddle;
 var paddle2;
 var ball;
 var socket;
+var padIntervalID;
 
 console.log('generating app.js!!!!!!!!!!');
 
@@ -709,14 +710,18 @@ function handle(message) {
         console.log("start game now");
         console.log("dir__________________");
         console.log(message.DIR);
-        // startGame();
+        
+        startGame();
+        console.log("starting")
+        if (message.DIR == -1) {
+          ball.position[1] = -ball.position[1];
+          ball.velocity[0] = -ball.velocity[0];
+          ball.velocity[1] = -ball.velocity[1];
+        }
+
+        // window.setImmediate(sendPad, 100);
       }
       break;
-  
-    case 'GAME':
-      if (message.STATE == 'start') {
-        // Start the game
-      }
 
     case 'PAD':
       paddle2.position[0] = -message.x;
