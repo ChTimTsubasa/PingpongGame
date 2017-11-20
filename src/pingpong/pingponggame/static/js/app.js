@@ -125,6 +125,17 @@ function Physics(ui, width, height) {
   fullPaddle.motionState = p2.Body.STATIC;
   ui.fullPaddle(fullPaddle);
 
+
+  var fullPaddle2 = new p2.Body({
+    position : [ 0, 7 ],
+    mass : 0
+  });
+  fullPaddle2.paddleWidth = 3;
+  fullPaddle2.addShape(fullPaddleShape);
+  fullPaddle2.isPaddle = true;
+  fullPaddle2.motionState = p2.Body.STATIC;
+  ui.fullPaddle(fullPaddle2);
+  
 //add!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // var fullPaddle2 = new p2.Body({
   //   position : [ 0, 9.5 ],
@@ -153,7 +164,7 @@ function Physics(ui, width, height) {
 
   //add another paddle
   // var paddle2 = miniPaddle;
-  paddle2 = miniPaddle;
+  paddle2 = fullPaddle2;
   world.addBody(paddle2);
 //add!!!!!!!!!!!!!!!!!!!!!
   // var paddle2 = fullPaddle2;
