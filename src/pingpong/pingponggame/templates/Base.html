@@ -24,24 +24,23 @@
 	</head>
 
 	<body>
-		<div class="container">
-			<h3 class="text-muted">Welcome to Ping Pong Game</h3>
-			<nav class="navbar navbar-expand-sm navbar-light bg-light rounded mb-3">
-				<a class="navbar-brand" href="{% url 'main' %}">PingPong Game</a>
+		
+			<nav class="navbar navbar-expand-sm rounded mb-3">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="navbar-brand whitetext largertext" href="{% url 'main' %}">PingPong Game</a>
+          </li>
+        </ul> 
+
 				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>	
 				<div class="collapse navbar-collapse ">	
 					{% block navbar %}
-						<ul class="navbar-nav">
-							<li class="nav-item">
-								<h3>PingPong Game</h3>
-							</li>
-						</ul>
 					{% endblock %}
 				</div>
 			</nav>
-			
+		<div class="container">	
 			{% block bodycontent %}					
 			{% endblock %}
 			
