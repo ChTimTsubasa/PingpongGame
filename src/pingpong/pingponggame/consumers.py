@@ -16,18 +16,24 @@ class GameServer(JsonWebsocketConsumer):
     # Set to True if you want it, else leave it out
     strict_ordering = False
 
+    # groups = None
+    
     @transaction.atomic
     def connection_groups(self, **kwargs):
         """
         Called to return the list of groups to automatically add/remove
         this connection to/from.
         """
+
         print(self.message.user)
         player = Player.objects.get(user=self.message.user)
         # When current player does exist and has a current game
         if player and player.current_game:
             game = player.current_game
             group = GameCache.store_group(player.user.id)
+            print("GROUPING")
+            print(group)
+            print(self.groups)
             return ["game_%s" % game.id, group]
 
     @transaction.atomic
@@ -48,10 +54,12 @@ class GameServer(JsonWebsocketConsumer):
         game.player_ready()
         # Accept the connection; 
         message.reply_channel.send({"accept": True})
-        
+        print("!!!!!!!!!!!!!!!!!!!!")
+        print(game.available_players)
         if game.available_players == 2:
             game.available_players = 0
             game.state = Game.READY_STATE
+            game.save()
             response = {'TYPE': 'STATE', 'STATE': 'ready'}
             # Initialize the game
             user1 = game.creator.user.id
@@ -64,6 +72,7 @@ class GameServer(JsonWebsocketConsumer):
         """
         Called when a message is received with decoded JSON content
         """
+        print(content)
         if content['TYPE'] == 'STATE':
             self.state_handle(content)
         else:
@@ -75,17 +84,29 @@ class GameServer(JsonWebsocketConsumer):
         if content['STATE'] == 'start':
             game.player_ready()
             if game.available_players == 2:
+                print("going to start game")
                 game.state = Game.GAMING_STATE
                 game.save()
                 response = {'TYPE': 'STATE', 'STATE': 'start'}
                 user1 = game.creator.user.id
-                user2 = game.creator.user.id
+                print(user1)
+                user2 = game.opponent.user.id
+                print(user2)
                 # user 1 should be positive
-                response[str(user1)] = 1
+                response['DIR'] = 1
+                oppo_group = GameCache.get_oppo_group(user1)
+                print(oppo_group)
+                print(response)
+                print(self.groups)
+                self.group_send(oppo_group, response)
+
                 # user 2 should be negative
-                response[str(user2)] = -1
-                self.group_send('game_%s' % game.id, response)
-        
+                response['DIR'] = -1
+                oppo_group = GameCache.get_oppo_group(user2)
+                print(oppo_group)
+                print(response)
+                self.group_send(oppo_group, response)
+
         # There may be race issue here
         elif content['STATE'] == 'score':
             game.add_oppo_player_score(player)
@@ -95,7 +116,7 @@ class GameServer(JsonWebsocketConsumer):
                 response = {'TYPE': 'STATE', 'STATE': 'end', 'WINER': winer.user.id}
                 self.group_send('game_%s' % game.id, response)
                 GameCache.delete_game(
-                                game.creator.user.id
+                                game.creator.user.id,
                                 game.opponent.user.id
                             )
 

@@ -3,10 +3,17 @@ var P2DEBUG = false;
 var paddle;
 var paddle2;
 var ball;
-
+var socket;
 
 console.log('generating app.js!!!!!!!!!!');
 
+function sendReady() {
+  console.log("ready")
+  socket.send(JSON.stringify({
+    TYPE: "STATE",
+    STATE: "start"
+  }))
+}
 
 function Physics(ui, width, height) {
 
@@ -243,7 +250,7 @@ function Physics(ui, width, height) {
       if (brick) {
         world.removeBody(brick);
         ui.hitBrick(brick);
-
+        
       } else if (bottom) {
         world.removeBody(ball);
         ui.hitBottom(bottom);
@@ -287,7 +294,7 @@ function Physics(ui, width, height) {
 
   this.startGame = function() {
     ball = findBall();
-    var a = Math.PI * Math.random() * 0.4 - 0.2;
+    var a = Math.PI * 0.3 * 0.4 - 0.2;
     var speed = ui.ballSpeed();
     ball.velocity = [ speed * Math.sin(a), speed * Math.cos(a) ];
   };
@@ -416,6 +423,8 @@ function Physics(ui, width, height) {
 }
 
 Stage(function(stage) {
+  console.log("start of tsage@@@@@@@@@@@@@");
+
   var Mouse = Stage.Mouse;
   var STORE_KEY = 'breakout-v1';
 
@@ -552,6 +561,7 @@ Stage(function(stage) {
   //   console.log(e.code);
   // };
   console.log(paddle.position[0]);
+
   var keyboard = {
     down : function(code) {
       // this[keyCode] = true;
@@ -593,11 +603,14 @@ Stage(function(stage) {
   });
 
   stage.on(Mouse.CLICK, function() {
+    console.log("on");
     if (!state.playing) {
-      startGame();
+      console.log('sending ready');
+      sendReady();
+      // startGame();
     }
   });
-
+  
   stage.tick(function(t) {
     if (state.playing) {
       physics.tick(t);
@@ -671,34 +684,21 @@ Stage(function(stage) {
     }
   }
 
-console.log('send position in generating app.js!!!!!!!!!!');
-
-function sendPosition() {
-  console.log('hihi-------------------');
-  console.log(paddle.position[0]);
-  console.log(paddle.position[1]);
-  console.log(paddle2.position[0]);
-  console.log(paddle2.position[1]);
-  console.log('ball');
-  console.log(ball.position[0]);
-  console.log(ball.position[1]);
-  console.log(ball.velocity[0]);
-  console.log(ball.velocity[1]);    
-  console.log('here!!!!!!!!!!');
-}
 
 console.log('exmaple.js file game_room part!!!!!!!!!!');
 function handle(message) {
-  // console.log(message)
+  console.log(message)
   switch (message.TYPE) {
     case 'STATE':
       if (message.STATE == 'ready') {
-        $('#win_but').prop('disabled', false);
+        // $('#win_but').prop('disabled', false);
       } else if (message.STATE == 'unready') {
         $('#win_but').prop('disabled', true);
       } else if (message.STATE == 'start') {
-        console.log("start game now")
-        startGame();
+        console.log("start game now");
+        console.log("dir__________________");
+        console.log(message.DIR);
+        // startGame();
       }
       break;
   
@@ -738,8 +738,7 @@ function updatePlayerInfo(data) {
 
 $(document).ready(function () {
   var game_id = $('#game').val()
-  var socket = new WebSocket('ws://' + window.location.host + '/game/' + game_id);
-
+  socket = new WebSocket('ws://' + window.location.host + '/game/' + game_id);
 
 function sendPad() {
   socket.send(JSON.stringify({
@@ -754,11 +753,12 @@ function sendBall() {
   socket.send(JSON.stringify({
     TYPE: "BALL",
     p_x: ball.position[0],
-    p_y: ball.position[0],
+    p_y: ball.position[1],
     v_x: ball.velocity[0],
-    v_y: ball.velocity[0],
+    v_y: ball.velocity[1],
   }))
 }
+
 
   sendRequest();
   window.setInterval(sendRequest, 1000);
@@ -770,7 +770,7 @@ function sendBall() {
   }
 
   socket.onopen = function() {
-    window.setInterval(sendPad, 100);
+  
   }
 
   socket.onclose = function() {

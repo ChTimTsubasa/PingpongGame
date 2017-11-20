@@ -12,7 +12,7 @@ class GameCache():
 
     @staticmethod
     def init_game(user1, user2, game_id):
-        GameCache.delete_game(user1, user2)
+        # GameCache.delete_game(user1, user2)
         cache.set(str(user1) + OPPO_SUF, user2)
         cache.set(str(user2) + OPPO_SUF, user1)
         cache.set(str(user1) + GAME_SUF, game_id)
