@@ -156,24 +156,9 @@ function Physics(ui, width, height) {
   fullPaddle2.addShape(fullPaddleShape);
   fullPaddle2.isPaddle = true;
   fullPaddle2.motionState = p2.Body.STATIC;
-<<<<<<< 4087d827fcfdb8e462db02b08a085b0891568b42
-  ui.fullPaddle(fullPaddle2);
-  
-//add!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // var fullPaddle2 = new p2.Body({
-  //   position : [ 0, 9.5 ],
-  //   mass : 0
-  // });
-  // fullPaddle2.paddleWidth = 3;
-  // fullPaddle2.addShape(fullPaddleShape);
-  // fullPaddle2.isPaddle = true;
-  // fullPaddle2.motionState = p2.Body.STATIC;
-  // ui.fullPaddle2(fullPaddle2);
-=======
   //add$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   ui.fullPaddle2(fullPaddle2);
   
->>>>>>> dummy
 
 
   var miniPaddle = new p2.Body({
@@ -186,19 +171,6 @@ function Physics(ui, width, height) {
   miniPaddle.motionState = p2.Body.STATIC;
   ui.miniPaddle(miniPaddle);
 
-<<<<<<< 4087d827fcfdb8e462db02b08a085b0891568b42
-  // var paddle = fullPaddle;
-  paddle = fullPaddle;
-  world.addBody(paddle);
-
-  //add another paddle
-  // var paddle2 = miniPaddle;
-  paddle2 = fullPaddle2;
-  world.addBody(paddle2);
-//add!!!!!!!!!!!!!!!!!!!!!
-  // var paddle2 = fullPaddle2;
-  // world.addBody(paddle2);
-=======
 
   paddle = fullPaddle;
   world.addBody(paddle);
@@ -207,7 +179,6 @@ function Physics(ui, width, height) {
   paddle2 = fullPaddle2;
   world.addBody(paddle2);
 
->>>>>>> dummy
 
   function setPaddle(neo) {
     if (paddle !== neo) {
@@ -218,8 +189,6 @@ function Physics(ui, width, height) {
     }
   }
 
-<<<<<<< 4087d827fcfdb8e462db02b08a085b0891568b42
-=======
   //add$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   function setPaddle2(neo) {
     if (paddle2 !== neo) {
@@ -230,7 +199,6 @@ function Physics(ui, width, height) {
     }
   }
 
->>>>>>> dummy
   function makeBall(pos) {
     var body = new p2.Body({
       mass : 1
@@ -347,10 +315,7 @@ function Physics(ui, width, height) {
 
     // setPaddle(miniPaddle);
     setPaddle(fullPaddle);
-<<<<<<< 4087d827fcfdb8e462db02b08a085b0891568b42
-=======
     setPaddle2(fullPaddle2);
->>>>>>> dummy
     makeBall([ 0, -5 ]);
   };
 
@@ -439,14 +404,11 @@ function Physics(ui, width, height) {
     setPaddle(fullPaddle);
   };
 
-<<<<<<< 4087d827fcfdb8e462db02b08a085b0891568b42
-=======
   //add$$$$$$$$$$$$$$$$$$$$$$$
   this.fullPaddle2 = function() {
     setPaddle2(fullPaddle2);
   };
 
->>>>>>> dummy
   // this.fullPaddle2 = function() {
   //   setPaddle(fullPaddle2);
   // };
@@ -577,8 +539,6 @@ Stage(function(stage) {
         'scale' : 1 / pscale
       });
     },
-<<<<<<< 4087d827fcfdb8e462db02b08a085b0891568b42
-=======
 //add$$$$$$$$$$$$$$$$$$$$$$$$$$$44
     fullPaddle2 : function(body) {
       body.ui = Stage.image('paddleFull').pin({
@@ -586,7 +546,6 @@ Stage(function(stage) {
         'scale' : 1 / pscale
       });
     },
->>>>>>> dummy
     gameOver : function() {
       gameOver();
     },
@@ -792,18 +751,11 @@ function handle(message) {
       break;
 
     case 'PAD':
-<<<<<<< 4087d827fcfdb8e462db02b08a085b0891568b42
-      console.log("x is ~~~~~~~");
-      console.log(message.x);
-      paddle2.position[0] = -message.x;
-      console.log(paddle2.velocity);
-=======
       // console.log("x is ~~~~~~~");
       // console.log(message.x);
       // paddle2.position[0] = -message.x;
       physics.movePaddle2(-message.x);
       // console.log(paddle2.velocity);
->>>>>>> dummy
       // paddle2.position[1] = message.y;
       break;
     case 'BALL':
