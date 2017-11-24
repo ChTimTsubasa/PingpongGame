@@ -63,43 +63,24 @@ function Physics(ui, width, height) {
   var ballShape = new p2.Circle(0.5);
   ballShape.material = ballMater;
 
-  var normalBrickShape = new p2.Rectangle(1.9, 1.9);
-  normalBrickShape.material = brickMater;
-
-  var smallBrickShape = new p2.Rectangle(0.9, 0.9);
-  smallBrickShape.material = brickMater;
-
-  var dropShape = new p2.Circle(0.3);
-
   var fullPaddleShape = new p2.Convex([ [ 1.8, -0.1 ], [ 1.8, 0.1 ],
       [ 1.2, 0.4 ], [ 0.4, 0.6 ], [ -0.4, 0.6 ], [ -1.2, 0.4 ], [ -1.8, 0.1 ],
       [ -1.8, -0.1 ] ]);
   fullPaddleShape.material = paddleMater;
 
-  var miniPaddleShape = new p2.Convex( [ [ 1.8, -0.1 ], [ 1.8, 0.1 ],
-      [ 1.2, 0.4 ], [ 0.4, 0.6 ], [ -0.4, 0.6 ], [ -1.2, 0.4 ], [ -1.8, 0.1 ],
-      [ -1.8, -0.1 ] ]);
-  miniPaddleShape.material = paddleMater;
 
-  var BALL = 1, WALL = 2, BRICK = 4, DROP = 8;
+  var BALL = 1, WALL = 2;
+  
 
   vwallShape.collisionGroup = WALL;
   hwallShape.collisionGroup = WALL;
   fullPaddleShape.collisionGroup = WALL;
-  miniPaddleShape.collisionGroup = WALL;
-  normalBrickShape.collisionGroup = BRICK;
-  smallBrickShape.collisionGroup = BRICK;
   ballShape.collisionGroup = BALL;
-  dropShape.collisionGroup = DROP;
 
   vwallShape.collisionMask = BALL;
-  hwallShape.collisionMask = BALL | DROP;
-  normalBrickShape.collisionMask = BALL;
-  smallBrickShape.collisionMask = BALL;
-  fullPaddleShape.collisionMask = BALL | DROP;
-  miniPaddleShape.collisionMask = BALL | DROP;
-  ballShape.collisionMask = WALL | BRICK;
-  dropShape.collisionMask = WALL;
+  hwallShape.collisionMask = BALL;
+  fullPaddleShape.collisionMask = BALL;
+  ballShape.collisionMask = WALL;
 
   var leftWall = new p2.Body({
     position : [ +9, -0.5 ],
@@ -156,21 +137,8 @@ function Physics(ui, width, height) {
   fullPaddle2.addShape(fullPaddleShape);
   fullPaddle2.isPaddle = false;
   fullPaddle2.motionState = p2.Body.STATIC;
-  //add$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   ui.fullPaddle2(fullPaddle2);
   
-
-
-  var miniPaddle = new p2.Body({
-    position : [ 0, 7 ],
-    mass : 0
-  });
-  miniPaddle.paddleWidth = 2;
-  miniPaddle.addShape(miniPaddleShape);
-  miniPaddle.isPaddle = true;
-  miniPaddle.motionState = p2.Body.STATIC;
-  ui.miniPaddle(miniPaddle);
-
 
   paddle = fullPaddle;
   world.addBody(paddle);
@@ -215,46 +183,12 @@ function Physics(ui, width, height) {
     return body;
   }
 
-  function makeBrick(name, shape, pos) {
-    var body = new p2.Body({
-      mass : 0
-    });
-    if (pos) {
-      body.position = pos;
-    }
-    body.addShape(shape);
-    body.isBrick = true;
-    body.motionState = p2.Body.STATIC;
-    ui.newBrick(body, name);
-    world.addBody(body);
-    return body;
-  }
-
-  function makeDrop(name) {
-    var body = new p2.Body({
-      mass : 1
-    });
-    body.addShape(dropShape);
-    body.isDrop = true;
-    ui.newDrop(body, name);
-    world.addBody(body);
-    return body;
-  }
 
   world.on('impact', function(evt) {
     var a = evt.bodyA, b = evt.bodyB;
     var ball = a.isBall && a || b.isBall && b;
-    var brick = a.isBrick && a || b.isBrick && b;
     var bottom = a.isBottom && a || b.isBottom && b;
     var paddle = a.isPaddle && a || b.isPaddle && b;
-    var drop = a.isDrop && a || b.isDrop && b;
-
-    if (drop) {
-      world.removeBody(drop);
-      if (paddle) {
-        ui.catchDrop(drop);
-      }
-    }
 
     if (ball) {
       var speed = ui.ballSpeed();
@@ -271,11 +205,7 @@ function Physics(ui, width, height) {
 
       ball.angularVelocity = ball.angle = 0;
 
-      if (brick) {
-        world.removeBody(brick);
-        ui.hitBrick(brick);
-        
-      } else if (bottom) {
+      if (bottom) {
         // world.removeBody(ball);
         // ui.hitBottom(bottom);
 
@@ -286,15 +216,6 @@ function Physics(ui, width, height) {
       }
     }
   });
-
-  function findBrick() {
-    for (var i = 0; i < world.bodies.length; i++) {
-      if (world.bodies[i].isBrick) {
-        return world.bodies[i];
-      }
-    }
-  }
-  this.findBrick = findBrick;
 
   function findBall() {
     for (var i = 0; i < world.bodies.length; i++) {
@@ -313,7 +234,6 @@ function Physics(ui, width, height) {
       }
     }
 
-    // setPaddle(miniPaddle);
     setPaddle(fullPaddle);
     setPaddle2(fullPaddle2);
     makeBall([ 0, -5 ]);
@@ -336,43 +256,6 @@ function Physics(ui, width, height) {
     // TODO: send a game end message
   };
 
-  // this.addRow = function(row) {
-  //   var over = false;
-  //   for (var i = 0; i < world.bodies.length; i++) {
-  //     var body = world.bodies[i];
-  //     if (body.isBrick) {
-  //       body.position[1] -= 2;
-  //       over = over || body.position[1] < -10;
-  //     }
-  //   }
-
-  //   for (var i = 0; i < row.length; i++) {
-  //     var cell = row[i], x = (i - 3) * 2, y = 9;
-
-  //     if (cell.type == 'none') {
-
-  //     } else if (cell.type == 'small') {
-  //       makeBrick(cell.color + 's', smallBrickShape, [ x + 0.5, y + 0.5 ]);
-  //       makeBrick(cell.color + 's', smallBrickShape, [ x - 0.5, y + 0.5 ]);
-  //       makeBrick(cell.color + 's', smallBrickShape, [ x + 0.5, y - 0.5 ]);
-  //       makeBrick(cell.color + 's', smallBrickShape, [ x - 0.5, y - 0.5 ]);
-
-  //     } else if (cell.type == 'normal') {
-  //       makeBrick(cell.color, normalBrickShape, [ x, y ]);
-  //     }
-  //   }
-
-  //   if (over) {
-  //     ui.gameOver();
-  //   }
-  // };
-
-  this.dropDown = function(brick, name) {
-    var body = makeDrop(name);
-    body.position[0] = brick.position[0];
-    body.position[1] = brick.position[1];
-    body.velocity[1] = ui.dropSpeed();
-  };
 
   this.addBall = function() {
     var oldball = findBall();
@@ -396,10 +279,6 @@ function Physics(ui, width, height) {
   };
 
 
-  this.miniPaddle = function() {
-    setPaddle(miniPaddle);
-  };
-
   this.fullPaddle = function() {
     setPaddle(fullPaddle);
   };
@@ -409,9 +288,6 @@ function Physics(ui, width, height) {
     setPaddle2(fullPaddle2);
   };
 
-  // this.fullPaddle2 = function() {
-  //   setPaddle(fullPaddle2);
-  // };
 
   this.tick = function(t) {
     var balls = 0;
@@ -484,54 +360,11 @@ Stage(function(stage) {
         'scale' : 1 / pscale
       });
     },
-    newDrop : function(body, name) {
-      body.ui = Stage.image(name).pin({
-        'handle' : 0.5,
-        'scale' : 1 / pscale
-      });
-      body.ui.dropName = name;
-    },
-    // newBrick : function(body, name) {
-    //   body.ui = Stage.image('b' + name).pin({
-    //     'handle' : 0.5,
-    //     'scale' : 1 / pscale
-    //   });
-    //   body.ui.drop = function() {
-    //     this.tween(70).alpha(0).remove();
-    //   };
-    // },
-    // hitBrick : function(brick) {
-    //   !physics.findBrick() && addRow();
-    //   state.score += state.combo;
-    //   // state.combo++;
-    //   updateScore();
-    //   dropDown(brick);
-    // },
     hitPaddle : function() {
       // state.combo = 1;
     },
     hitBottom : function() {
       !physics.findBall() && gameOver();
-    },
-    catchDrop : function(drop) {
-      var name = drop.ui.dropName;
-      if (name == '+') {
-        physics.addBall();
-
-      } else if (name == '-') {
-        Timeout.set(function() {
-          physics.miniPaddle();
-        }, 1);
-        Timeout.set(function() {
-          physics.fullPaddle();
-        }, 7500, 'mini');
-      }
-    },
-    miniPaddle : function(body) {
-      body.ui = Stage.image('paddleMini').pin({
-        'handle' : 0.5,
-        'scale' : 1 / pscale
-      });
     },
     fullPaddle : function(body) {
       body.ui = Stage.image('paddleFull').pin({
@@ -552,9 +385,6 @@ Stage(function(stage) {
     paddleSpeed : function() {
       return 20;
     },
-    dropSpeed : function() {
-      return -6;
-    },
     ballSpeed : function() {
       return (13 + state.score * 0.05);
     }
@@ -572,56 +402,10 @@ Stage(function(stage) {
     'align' : 0.5,
     'scale' : pscale
   }).appendTo(board);
-
+  //User use mouse to move paddle
   p2view.on([ Mouse.START, Mouse.MOVE ], function(point) {
     physics.movePaddle(point.x);
   });
-
-//!add!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// Keyboard
-  document.onkeydown = function(e) {
-    // world.run(true);
-    stage.touch();
-    e = e || window.event;
-    keyboard.down(e.code);
-    console.log(e.code);
-    // console.log(paddle.position[0]);
-    // console.log(paddle.position[1]);
-    // console.log('ball');
-    // console.log(ball.position[0]);
-    // console.log(ball.position[1]);
-    // console.log(ball.velocity[0]);
-    // console.log(ball.velocity[1]);    
-    // console.log('here!!!!!!!!!!');
-  };
-  // document.onkeyup = function(e) {
-  //   e = e || window.event;
-  //   keyboard.up(e.keyCode);
-  //   console.log(e.code);
-  // };
-  console.log(paddle.position[0]);
-
-  var keyboard = {
-    down : function(code) {
-      // this[keyCode] = true;
-      if (code == 'ArrowLeft') {
-        physics.movePaddle2(paddle2.position[0] - 2);
-      }
-
-      if (code == 'ArrowRight') {
-        physics.movePaddle2(paddle2.position[0] + 2);
-      }
-      // this.update();
-    },
-    up : function(keyCode) {
-      // this[keyCode] = false;
-      this.update();
-    },
-    update : function() {
-    }
-  };
-
-
 
   var maxscore = Stage.string('d_').appendTo(board).pin({
     alignX : 1,
@@ -670,7 +454,6 @@ Stage(function(stage) {
       state.score = 0, state.combo = 1;
       updateStatus();
       physics.initGame();
-      // addRow() + addRow() + addRow();
     }
     state.ready = true;
   }
@@ -680,7 +463,6 @@ Stage(function(stage) {
     state.ready = false;
     physics.startGame();
     Timeout.loop(function() {
-      // addRow();
       return nextTime();
     }, nextTime());
     state.playing = true;
@@ -713,17 +495,6 @@ Stage(function(stage) {
     return 8000 - 20 * state.score;
   }
 
-
-  function dropDown(brick) {
-    var random = Math.random();
-    if (random < 0.06) {
-      physics.dropDown(brick, '+');
-    } else if (random < 0.1) {
-      physics.dropDown(brick, '-');
-    }
-  }
-
-
 console.log('exmaple.js file game_room part!!!!!!!!!!');
 function handle(message) {
   console.log(message)
@@ -751,12 +522,7 @@ function handle(message) {
       break;
 
     case 'PAD':
-      // console.log("x is ~~~~~~~");
-      // console.log(message.x);
-      // paddle2.position[0] = -message.x;
       physics.movePaddle2(-message.x);
-      // console.log(paddle2.velocity);
-      // paddle2.position[1] = message.y;
       break;
     case 'BALL':
       ball.position[0] = -message.p_x;
