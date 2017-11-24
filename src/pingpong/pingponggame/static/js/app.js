@@ -154,7 +154,7 @@ function Physics(ui, width, height) {
   });
   fullPaddle2.paddleWidth = 3;
   fullPaddle2.addShape(fullPaddleShape);
-  fullPaddle2.isPaddle = true;
+  fullPaddle2.isPaddle = false;
   fullPaddle2.motionState = p2.Body.STATIC;
   //add$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   ui.fullPaddle2(fullPaddle2);
