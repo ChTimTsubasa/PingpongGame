@@ -84,15 +84,9 @@ DATABASES = {
         'NAME': 'pingpong',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'postgres',
-<<<<<<< 4087d827fcfdb8e462db02b08a085b0891568b42
-        'PASSWORD': '',
-        'HOST': 'localhost',    # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
-        'PORT': '',             # Set to empty string for default.
-=======
         # 'PASSWORD': '',
         # 'HOST': 'localhost',    # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
         # 'PORT': '',             # Set to empty string for default.
->>>>>>> dummy
     }
 }
 
