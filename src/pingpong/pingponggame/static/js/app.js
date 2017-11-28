@@ -495,7 +495,6 @@ Stage(function(stage) {
     return 8000 - 20 * state.score;
   }
 
-console.log('exmaple.js file game_room part!!!!!!!!!!');
 function handle(message) {
   console.log(message)
   switch (message.TYPE) {
