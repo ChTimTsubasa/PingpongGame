@@ -60,7 +60,8 @@ class GameServer(JsonWebsocketConsumer):
             game.available_players = 0
             game.state = Game.READY_STATE
             game.save()
-            response = {'TYPE': 'STATE', 'STATE': 'ready'}
+            response = {'TYPE': 'STATE'}
+            response['INPUT'] =  {'event': 1}    # 1 is ALL_IN
             # Initialize the game
             user1 = game.creator.user.id
             user2 = game.opponent.user.id

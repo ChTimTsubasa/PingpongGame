@@ -525,7 +525,7 @@ function handle(message) {
   console.log(message)
   switch (message.TYPE) {
     case 'STATE':
-      var input = message.input;
+      var input = message.INPUT;
       status_trans(input);
       break;
     case 'PAD':
@@ -677,9 +677,9 @@ $(document).ready(function () {
   socket.onclose = function() {
     socket.close();
   }
-  
-  $('#ready_but').prop('disabled', true);
-  $('#ready_but').click(clickReadyButton);
+
+  // Ready button intialization
+  disableButton();
 
 // send the pad info to server
 });
