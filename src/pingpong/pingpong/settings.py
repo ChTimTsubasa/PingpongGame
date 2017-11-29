@@ -14,7 +14,7 @@ import os
 from configparser import RawConfigParser
 
 config = RawConfigParser()
-config.read('/home/yuanyuandong/webapplcation/password.ini')
+config.read('/home/ubuntu/password.ini')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
