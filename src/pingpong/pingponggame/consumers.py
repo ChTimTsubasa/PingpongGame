@@ -17,7 +17,7 @@ class GameServer(JsonWebsocketConsumer):
     strict_ordering = False
 
     # groups = None
-    
+
     @transaction.atomic
     def connection_groups(self, **kwargs):
         """

@@ -513,34 +513,21 @@ function fireGame(dir) {
     ball.velocity[1] = -ball.velocity[1];
   }
 
-  window.setInterval(sendPad, 100);
+  padIntervalID = window.setInterval(sendPad, 100);
+}
+
+function pauseGame() {
+  window.clearInterval(padIntervalID);
+  gameOver();
 }
 
 function handle(message) {
   console.log(message)
   switch (message.TYPE) {
     case 'STATE':
-      if (message.STATE == 'ready') {
-        // $('#win_but').prop('disabled', false);
-      } else if (message.STATE == 'unready') {
-        $('#win_but').prop('disabled', true);
-      } else if (message.STATE == 'start') {
-        console.log("start game now");
-        console.log("dir__________________");
-        console.log(message.DIR);
-        
-        startGame();
-        console.log("starting")
-        if (message.DIR == -1) {
-          ball.position[1] = -ball.position[1];
-          ball.velocity[0] = -ball.velocity[0];
-          ball.velocity[1] = -ball.velocity[1];
-        }
-
-        window.setInterval(sendPad, 100);
-      }
+      var input = message.input;
+      status_trans(input);
       break;
-
     case 'PAD':
       physics.movePaddle2(-message.x);
       break;
@@ -573,7 +560,7 @@ function status_trans(input) {
   switch(status) {
     case ClientStatus.WAIT:
     {
-      switch (input) {
+      switch (input.event) {
         case EventInput.ALL_IN:
           enableButton();
           status = ClientStatus.PREPARING;
@@ -583,7 +570,7 @@ function status_trans(input) {
     }
     case ClientStatus.PREPARING:
     {
-      switch (input) {
+      switch (input.event) {
         case EventInput.ONE_OUT:
           disableButton();
           status = ClientStatus.WAIT;
@@ -601,13 +588,16 @@ function status_trans(input) {
     }
     case ClientStatus.GAMING:
     {
-      switch (input) {
+      switch (input.event) {
         case EventInput.SCORE:
+          pauseGame();
           // TODO update score
+          console.log(input.score);
           status = ClientStatus.PAUSE;
           break;
         
         case EventInput.ONE_OUT:
+          pauseGame();
           // Start the timer
           // POPout a timer and wait
           status = ClientStatus.PAUSE;
@@ -621,9 +611,9 @@ function status_trans(input) {
     }
     case ClientStatus.PAUSE:
     {
-      switch (input) {
+      switch (input.event) {
         case EventInput.START:
-          fireGame(dir);
+          fireGame(input.dir);
           break;
         case EventInput.TIMEOUT:
           status = ClientStatus.END;
@@ -651,7 +641,20 @@ function enableButton() {
 }
 
 function clickReadyButton() {
-
+  console.log ("button clicked");
+  if ($('#ready_but').value == "Click to ready") {
+    socket.send(JSON.stringify({
+      TYPE: "STATE",
+      STATE: 'ready',
+    }));
+    $('#ready_but').value == "Click to unready";
+  } else {
+    socket.send(JSON.stringify({
+      TYPE: "STATE",
+      STATE: 'unready',
+    }));
+    $('#ready_but').value == "Click to ready";
+  }
 }
 
 $(document).ready(function () {
@@ -676,28 +679,9 @@ $(document).ready(function () {
   }
   
   $('#ready_but').prop('disabled', true);
-
-  $('#ready_but').click(function() {
-    console.log ("button clicked");
-    if ($('#ready_but').value == "Click to ready") {
-      socket.send(JSON.stringify({
-        TYPE: "STATE",
-        STATE: 'ready',
-      }));
-      $('#ready_but').value == "Click to unready";
-    } else {
-      socket.send(JSON.stringify({
-        TYPE: "STATE",
-        STATE: 'unready',
-      }));
-      $('#ready_but').value == "Click to ready";
-    }
-  })
-
+  $('#ready_but').click(clickReadyButton);
 
 // send the pad info to server
-
-
 });
 
 });
