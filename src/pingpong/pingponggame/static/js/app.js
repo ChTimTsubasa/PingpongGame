@@ -22,7 +22,7 @@ var ball;
 var socket;
 var padIntervalID;
 
-var status;
+var client_status = 0;
 
 console.log('generating app.js!!!!!!!!!!');
 
@@ -557,11 +557,13 @@ function updatePlayerInfo(data) {
 }
 
 function status_trans(input) {
-  switch(status) {
+  switch(client_status) {
     case ClientStatus.WAIT:
     {
+      console.log("status in WAIT");
       switch (input.event) {
         case EventInput.ALL_IN:
+          console.log('Event in ALL_IN');
           enableButton();
           status = ClientStatus.PREPARING;
         default: break;
@@ -573,14 +575,14 @@ function status_trans(input) {
       switch (input.event) {
         case EventInput.ONE_OUT:
           disableButton();
-          status = ClientStatus.WAIT;
+          client_status = ClientStatus.WAIT;
           break;
         case EventInput.START:
           console.log('start game');
           disableButton();
           // TODO get the dir from message
           fireGame(dir);
-          status = ClientStatus.GAMING;
+          client_status = ClientStatus.GAMING;
         default:
           break;
       }
@@ -593,19 +595,19 @@ function status_trans(input) {
           pauseGame();
           // TODO update score
           console.log(input.score);
-          status = ClientStatus.PAUSE;
+          client_status = ClientStatus.PAUSE;
           break;
         
         case EventInput.ONE_OUT:
           pauseGame();
           // Start the timer
           // POPout a timer and wait
-          status = ClientStatus.PAUSE;
+          client_status = ClientStatus.PAUSE;
           break;
         
         case EventInput.ONE_WIN:
           // pop out the result
-          status = ClientStatus.END;
+          client_status = ClientStatus.END;
       }
       break;
     }
@@ -616,7 +618,7 @@ function status_trans(input) {
           fireGame(input.dir);
           break;
         case EventInput.TIMEOUT:
-          status = ClientStatus.END;
+          client_status = ClientStatus.END;
       }
       break;
     }
@@ -627,33 +629,39 @@ function status_trans(input) {
       console.log("getting input of " + input);
       break;
     }
+    break;
+    default:
+    {
+      console.log("DEFAULT STATE");
+    }
   }
+
 }
 
 function disableButton() {
-  $('#ready_but').value = "Click to prepare";
-  $('#ready_but').prop('disable', true);
+  $('#ready_but').text("Click to prepare");
+  $('#ready_but').hide();
 }
 
 function enableButton() {
-  $('#ready_but').value = "Click to prepare";
-  $('#ready_but').prop('disable', false);
+  console.log("button show!!");
+  $('#ready_but').show();
 }
 
 function clickReadyButton() {
   console.log ("button clicked");
-  if ($('#ready_but').value == "Click to ready") {
+  if ($('#ready_but').text() == "Click to ready") {
     socket.send(JSON.stringify({
       TYPE: "STATE",
       STATE: 'ready',
     }));
-    $('#ready_but').value == "Click to unready";
+    $('#ready_but').text("Click to unready");
   } else {
     socket.send(JSON.stringify({
       TYPE: "STATE",
       STATE: 'unready',
     }));
-    $('#ready_but').value == "Click to ready";
+    $('#ready_but').text("Click to ready");
   }
 }
 
@@ -671,7 +679,8 @@ $(document).ready(function () {
   }
 
   socket.onopen = function() {
-    status = ClientStatus.WAIT;
+    disableButton();
+    client_status = ClientStatus.WAIT;
   }
   
   socket.onclose = function() {
@@ -679,7 +688,6 @@ $(document).ready(function () {
   }
 
   // Ready button intialization
-  disableButton();
 
 // send the pad info to server
 });
