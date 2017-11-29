@@ -1,3 +1,19 @@
+ClientStatus = {
+  WAIT :      1,  // Wait for another user
+  PREPARING : 2,  // Being in unready status
+  GAMING :    3,  // Game is started
+  PAUSE :     4,  // Game is paused for [1 user lose point] [some one jump out]
+  END :       5,  // Game is ended
+}
+
+EventInput = {
+  ALL_IN :    1,  // All users are in
+  ONE_OUT :   2,  // One of the user ready
+  START :     3,  // Server send an Start command 
+  SCORE :     4,  // Server send a score indicating one is win
+  ONE_WIN :   5,  // One of the user wins
+}
+
 var P2DEBUG = false;
 
 var paddle;
@@ -5,6 +21,8 @@ var paddle2;
 var ball;
 var socket;
 var padIntervalID;
+
+var status;
 
 console.log('generating app.js!!!!!!!!!!');
 
@@ -424,15 +442,6 @@ Stage(function(stage) {
   var restart = Stage.image('restart').appendTo(board).pin({
     align : 0.5,
   });
-
-  stage.on(Mouse.CLICK, function() {
-    console.log("on");
-    if (!state.playing) {
-      console.log('sending ready');
-      sendReady();
-      // startGame();
-    }
-  });
   
   stage.tick(function(t) {
     if (state.playing) {
@@ -495,6 +504,18 @@ Stage(function(stage) {
     return 8000 - 20 * state.score;
   }
 
+function fireGame(dir) {
+  //TODO count down for 3 second
+  startGame();
+  if (dir == -1) {
+    ball.position[1] = -ball.position[1];
+    ball.velocity[0] = -ball.velocity[0];
+    ball.velocity[1] = -ball.velocity[1];
+  }
+
+  window.setInterval(sendPad, 100);
+}
+
 function handle(message) {
   console.log(message)
   switch (message.TYPE) {
@@ -548,6 +569,91 @@ function updatePlayerInfo(data) {
   $('#opponent').html(players[1].html);
 }
 
+function status_trans(input) {
+  switch(status) {
+    case ClientStatus.WAIT:
+    {
+      switch (input) {
+        case EventInput.ALL_IN:
+          enableButton();
+          status = ClientStatus.PREPARING;
+        default: break;
+      }
+      break;
+    }
+    case ClientStatus.PREPARING:
+    {
+      switch (input) {
+        case EventInput.ONE_OUT:
+          disableButton();
+          status = ClientStatus.WAIT;
+          break;
+        case EventInput.START:
+          console.log('start game');
+          disableButton();
+          // TODO get the dir from message
+          fireGame(dir);
+          status = ClientStatus.GAMING;
+        default:
+          break;
+      }
+      break;
+    }
+    case ClientStatus.GAMING:
+    {
+      switch (input) {
+        case EventInput.SCORE:
+          // TODO update score
+          status = ClientStatus.PAUSE;
+          break;
+        
+        case EventInput.ONE_OUT:
+          // Start the timer
+          // POPout a timer and wait
+          status = ClientStatus.PAUSE;
+          break;
+        
+        case EventInput.ONE_WIN:
+          // pop out the result
+          status = ClientStatus.END;
+      }
+      break;
+    }
+    case ClientStatus.PAUSE:
+    {
+      switch (input) {
+        case EventInput.START:
+          fireGame(dir);
+          break;
+        case EventInput.TIMEOUT:
+          status = ClientStatus.END;
+      }
+      break;
+    }
+    case ClientStatus.END:
+    {
+      //TODO popout 
+      console.log("END of the game");
+      console.log("getting input of " + input);
+      break;
+    }
+  }
+}
+
+function disableButton() {
+  $('#ready_but').value = "Click to prepare";
+  $('#ready_but').prop('disable', true);
+}
+
+function enableButton() {
+  $('#ready_but').value = "Click to prepare";
+  $('#ready_but').prop('disable', false);
+}
+
+function clickReadyButton() {
+
+}
+
 $(document).ready(function () {
   var game_id = $('#game').val()
   socket = new WebSocket('ws://' + window.location.host + '/game/' + game_id);
@@ -562,23 +668,30 @@ $(document).ready(function () {
   }
 
   socket.onopen = function() {
+    status = ClientStatus.WAIT;
+  }
   
-  }
-
   socket.onclose = function() {
-      socket.close();
+    socket.close();
   }
+  
+  $('#ready_but').prop('disabled', true);
 
-  $('#win_but').prop('disabled', true);
-
-  $('#win_but').click(function() {
-      console.log ("button clicked")
+  $('#ready_but').click(function() {
+    console.log ("button clicked");
+    if ($('#ready_but').value == "Click to ready") {
       socket.send(JSON.stringify({
-          TYPE: "STATE",
-          STATE: 'start',
+        TYPE: "STATE",
+        STATE: 'ready',
       }));
-
-      $('#win_but').prop('disabled', true);
+      $('#ready_but').value == "Click to unready";
+    } else {
+      socket.send(JSON.stringify({
+        TYPE: "STATE",
+        STATE: 'unready',
+      }));
+      $('#ready_but').value == "Click to ready";
+    }
   })
 
 
