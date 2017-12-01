@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'channels',
     'pingponggame',
 ]
@@ -87,7 +88,7 @@ WSGI_APPLICATION = 'pingpong.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': config.get('database','DATABASE_ENGINE'), # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': config.get('database','DATABASE_NAME'),                     # Or path to database file if using sqlite3.
+        'NAME': 'pingpong_t',#config.get('database','DATABASE_NAME'),                     # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': config.get('database', 'DATABASE_USER'),
     }

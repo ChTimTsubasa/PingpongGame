@@ -52,7 +52,6 @@ def registration(request):
 @transaction.atomic
 @login_required	
 def main(request):
-	print("hererer");
 	context = {}
 	player = get_object_or_404(Player, user=request.user)
 	context['form'] = JoinRoomForm()
@@ -77,9 +76,10 @@ def create_room(request):
 @login_required	
 def get_players_info(request, game_id):
 	context = {}
+	if not game_id:
+		return
 	game = get_object_or_404(Game, id=game_id)
-	
-	context['creator'] = game.creator
+
 	context['opponent'] = game.opponent
 
 	return render(request, 'Player.json', context, content_type='application/json')

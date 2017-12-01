@@ -8,8 +8,7 @@ from pingponggame.models import *
 class PlayerForm(forms.ModelForm):
 	class Meta:
 		model = Player
-		exclude = ('user', 'current_game',)
-		widgets = {'image': forms.FileInput()}
+		exclude = ('user', 'score', 'currentGame')
 		
 #User registration form
 class UserForm(forms.ModelForm):

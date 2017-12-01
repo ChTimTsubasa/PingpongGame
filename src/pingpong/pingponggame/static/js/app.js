@@ -639,7 +639,7 @@ function status_trans(input) {
 }
 
 function disableButton() {
-  $('#ready_but').text("Click to prepare");
+  $('#ready_but').text("Click to ready");
   $('#ready_but').hide();
 }
 
@@ -667,7 +667,7 @@ function clickReadyButton() {
 
 $(document).ready(function () {
   var game_id = $('#game').val()
-  socket = new WebSocket('ws://' + window.location.host + '/game/' + game_id);
+  socket = new WebSocket('ws://' + window.location.host + '/game');
 
   sendRequest();
   window.setInterval(sendRequest, 1000);
@@ -679,6 +679,7 @@ $(document).ready(function () {
   }
 
   socket.onopen = function() {
+    $('#ready_but').click(clickReadyButton);
     disableButton();
     client_status = ClientStatus.WAIT;
   }

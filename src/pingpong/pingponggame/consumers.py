@@ -2,7 +2,7 @@ import json
 from channels import Group
 from channels.auth import channel_session_user, channel_session_user_from_http
 from channels.generic.websockets import JsonWebsocketConsumer
-from .models import Player, Game
+from .models import Player, CurrentGame
 
 from django.db import transaction
 
@@ -54,7 +54,6 @@ class GameServer(JsonWebsocketConsumer):
         game.player_ready()
         # Accept the connection; 
         message.reply_channel.send({"accept": True})
-        print("!!!!!!!!!!!!!!!!!!!!")
         print(game.available_players)
         if game.available_players == 2:
             game.available_players = 0
@@ -82,31 +81,32 @@ class GameServer(JsonWebsocketConsumer):
     def state_handle(self, content):
         player = Player.objects.get(user=self.message.user)
         game = player.current_game
-        if content['STATE'] == 'start':
-            game.player_ready()
-            if game.available_players == 2:
-                print("going to start game")
-                game.state = Game.GAMING_STATE
-                game.save()
-                response = {'TYPE': 'STATE', 'STATE': 'start'}
-                user1 = game.creator.user.id
-                print(user1)
-                user2 = game.opponent.user.id
-                print(user2)
-                # user 1 should be positive
-                response['DIR'] = 1
-                oppo_group = GameCache.get_oppo_group(user1)
-                print(oppo_group)
-                print(response)
-                print(self.groups)
-                self.group_send(oppo_group, response)
+        if (game.state == Game.READY_STATE):
+            if content['STATE'] == 'ready':
+                game.player_ready()
+                if game.available_players == 2:
+                    print("going to start game")
+                    game.state = Game.GAMING_STATE
+                    game.save()
+                    response = {'TYPE': 'STATE', 'STATE': 'start'}
+                    user1 = game.creator.user.id
 
-                # user 2 should be negative
-                response['DIR'] = -1
-                oppo_group = GameCache.get_oppo_group(user2)
-                print(oppo_group)
-                print(response)
-                self.group_send(oppo_group, response)
+                    user2 = game.opponent.user.id
+
+                    # user 1 should be positive
+                    response['DIR'] = 1
+                    oppo_group = GameCache.get_oppo_group(user1)
+                    self.group_send(oppo_group, response)
+
+                    # user 2 should be negative
+                    response['DIR'] = -1
+                    oppo_group = GameCache.get_oppo_group(user2)
+                    self.group_send(oppo_group, response)
+
+            if content['STATE'] == 'unready':
+                game.player_gone()
+                if game.available_players == 0:
+                    pass
 
         # There may be race issue here
         elif content['STATE'] == 'score':
