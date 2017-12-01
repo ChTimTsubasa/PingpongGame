@@ -30,12 +30,19 @@
 				<p class="alert">{{error}}</p>
 			{% endfor %}
 			<table>
-				
 				{% for field in user_form.visible_fields %}
 				<tr>
 				  <td>{{field.label_tag}}</td>
 				  <td>{{field}}</td>
 				  <td class="alert">{{field.errors}}</td>
+				</tr>
+				{% endfor %}
+
+				{% for field in player_form.visible_fields %}
+				<tr>
+				  <td>{{field.label_tag}}</td>
+				  <td>{{field}}</td>
+				  <td class="alsert">{{field.errors}}</td>
 				</tr>
 				{% endfor %}
 
@@ -46,14 +53,7 @@
 				  <td class="alert">{{field.errors}}</td>
 				</tr>
 				{% endfor %}
-				
-				{% for field in player_form.visible_fields %}
-				<tr>
-				  <td>{{field.label_tag}}</td>
-				  <td>{{field}}</td>
-				  <td class="alert">{{field.errors}}</td>
-				</tr>
-				{% endfor %}		
+					
 			</table>
 
 	<!-- 		<input id="id_pic" name="picture" type="file"> -->
