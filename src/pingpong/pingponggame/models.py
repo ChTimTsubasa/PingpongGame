@@ -9,171 +9,100 @@ import datetime
 
 # Player model
 class Player(models.Model):
+	# user field for authentication
 	user = models.OneToOneField(User)
-	current_game = models.ForeignKey('Game', null=True)
-	nickname = models.CharField(default = '', max_length=100, blank = True)
-	image = models.ImageField(upload_to = "userpictures", blank = True)
 	
+	# nickname of the user
+	nickname = models.CharField(default = '', max_length=100, blank = True)
+	
+	# score of the user in the current game. When there is a current game
+	score = models.IntegerField(default=0)
+
+	# current game that the player is playing
+	currentGame = models.ForeignKey(
+		'CurrentGame',
+		models.SET_NULL,	# on delete
+		blank=True,
+		null=True,
+	)
+
 	@property
 	def html(self):
 		return render_to_string("Player.html", {"player":self}).replace("\n", "")
 
-	def create_new_game(self):
-		new_game = Game.create_new(self)
-		self.current_game = new_game
-		self.save()
-		return new_game
-
-	def join_game_by_id(self, game_id):
-		game = Game.get_by_id(game_id)
-		if not game:
-			return None
-		if game.opponent: #game is full already
-			return "full"
-		self.current_game = game
-		self.current_game.add_opponent(self)
-		self.save()		
-		return game
-
-	def join_game_random(self):
-		game = Game.get_available_game()
-
-		if not game:
-			return None
-		self.current_game = game
-		self.current_game.add_opponent(self)
-		self.save()
-		return game
-
-	def leave_game(self):
-		if not self.current_game:
-			return
-		self.current_game.emit_player(self)
-		self.current_game = None
-		self.save()
-
 # TODO add the source of reference
 # Game Model
-class Game(models.Model):
+class CurrentGame(models.Model):
 	JOIN_STATE = 0
 	READY_STATE = 1
 	GAMING_STATE = 2
 	PAUSE_STATE = 3
-	END_STATE = 4
 
 	GAME_STATE = (
 		(JOIN_STATE, 'Join'),
 		(READY_STATE, 'Ready'),
 		(GAMING_STATE, 'Gaming'),
 		(PAUSE_STATE, 'Pause'),
-		(END_STATE, 'End'),
 	)
-
+	# game state
 	state = models.IntegerField(choices=GAME_STATE, default=JOIN_STATE)
 
-    # Players
-	winner = models.ForeignKey(Player, related_name='winner', null=True, blank=True)
-	creator = models.ForeignKey(Player, related_name='creator')
-	opponent = models.ForeignKey(Player, related_name='opponent',null=True, blank=True)
+	max_player_num = models.IntegerField(default=2)
+
+	max_score = models.IntegerField(default=3)
 
 	#Dates
 	completed = models.DateTimeField(null=True, blank=True)
 	created = models.DateTimeField(auto_now_add=True)
-	modified = models.DateTimeField(auto_now=True)
-
-	#game state
-	available_players = models.IntegerField(default=0)
-	creator_score = models.IntegerField(default=0)
-	opponent_score = models.IntegerField(default=0)
 
 	def __unicode__(self):
 		return 'Game #{0}'.format(self.pk)
 
 	@staticmethod
-	def get_newer_game(id):
-		return Game.objects.filter(winner__isnull=False, id__gt=id).order_by('completed')
+	def get_game_random():
+		games = Game.objects.filter(state=JOIN_STATE)
+		for game in games:
+			if game.player_set.count() < game.max_player_num:
+				return game
+		return None
 
 	@staticmethod
-	def get_available_game():
-		return Game.objects.filter(opponent=None, completed=None).first()
-
-	@staticmethod
-	def get_by_id(id):
+	def get_game_by_id(id):
 		try:
-			return Game.objects.filter(opponent=None, completed=None).get(pk=id)
+			game = Game.objects.filter(state=JOIN_STATE).get(pk=id)
 		except Game.DoesNotExist:
 			return None
 
-	@staticmethod
-	def create_new(player):
-		"""
-		Create a new game and game squares
-		:param player: the player that created the game
-		:return: a new game object
-		"""
-		# make the game's name from the username and the number of
-		# games they've created
-		new_game = Game(creator=player)
-		new_game.save()
+		if game.player_set.count() < game.max_player_num:
+			return game
+		
+		return None
 
-		return new_game
 
-	def add_opponent(self, player):
-		self.opponent = player
-		self.save()
+class GameRecord(models.Model):
+	# Winner of this game
+	winner = models.ForeignKey(
+		Player,
+		on_delete=models.DO_NOTHING,
+		related_name='win_game'
+	)
 
-	def emit_player(self, player):
-		if self.opponent == player:
-			self.opponent = None
-			self.save()
-		if self.creator == player:
-			if self.opponent:
-				self.creator = self.opponent
-				self.opponent = None
-				self.save()
-			else:
-				self.delete()
-
-	def mark_complete(self, winner):
-		"""
-		Sets a game to completed status and records the winner
-		"""
-		self.winner = winner
-		self.completed = datetime.datetime.now()
-		self.save()
-
-	def player_ready(self):
-		self.available_players = self.available_players + 1
-		self.save()
-
-	def player_gone(self):
-		self.available_players = self.available_players - 1
-		self.save()
-
-	def add_oppo_player_score(self, player):
-		if player != self.creator:
-			self.creator_score = self.creator_score + 1
-			self.save()
-			print('c')
-		elif player != self.opponent:
-			self.opponent_score = self.opponent_score + 1
-			self.save()
-			print('o')
-	
-	def determine_winner(self):
-		print(self.creator_score)
-		print(self.opponent_score)
-		if self.creator_score >= self.opponent_score:
-			print("here")
-			self.mark_complete(self.creator)
-		else:
-			print("here2")
-			self.mark_complete(self.opponent)
-		return self.winner
+	# Participants of this game
+	participants = models.ManyToManyField(
+		Player,
+		through='Participant'
+	)
 
 	@property
 	def html(self):
 		return render_to_string("Game.html", {"game":self}).replace("\n", "")
+
+class Participant(models.Model):
+	player = models.ForeignKey(Player, on_delete=models.CASCADE)
+	gameRecord = models.ForeignKey(GameRecord, on_delete=models.CASCADE)
+	
+	# The score of the user
+	score = models.IntegerField(default=0)
 
 class Pad():
 	position_X = 0.0
