@@ -26,6 +26,20 @@ class Player(models.Model):
 		null=True,
 	)
 
+	def join_game(self, game):
+		if self.currentGame:
+			# TODO more appropriate error should be thrown
+			raise AttributeError('you are already in a game')
+		self.currentGame = game
+		self.save()
+
+	def leave_game(self, game):
+		if self.currentGame != game:
+			# TODO more appropriate error should be thrown
+			raise AttributeError('you are not in this game')
+		self.currentGame = None
+		self.save()
+
 	@property
 	def html(self):
 		return render_to_string("Player.html", {"player":self}).replace("\n", "")
@@ -49,6 +63,7 @@ class CurrentGame(models.Model):
 
 	max_player_num = models.IntegerField(default=2)
 
+	# The score that if some one get reach, the game ends
 	max_score = models.IntegerField(default=3)
 
 	#Dates
@@ -60,7 +75,7 @@ class CurrentGame(models.Model):
 
 	@staticmethod
 	def get_game_random():
-		games = Game.objects.filter(state=JOIN_STATE)
+		games = CurrentGame.objects.filter(state=CurrentGame.JOIN_STATE)
 		for game in games:
 			if game.player_set.count() < game.max_player_num:
 				return game
@@ -69,8 +84,8 @@ class CurrentGame(models.Model):
 	@staticmethod
 	def get_game_by_id(id):
 		try:
-			game = Game.objects.filter(state=JOIN_STATE).get(pk=id)
-		except Game.DoesNotExist:
+			game = CurrentGame.objects.filter(state=JOIN_STATE).get(pk=id)
+		except CurrentGame.DoesNotExist:
 			return None
 
 		if game.player_set.count() < game.max_player_num:
