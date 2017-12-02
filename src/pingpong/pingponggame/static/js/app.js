@@ -590,6 +590,7 @@ function status_trans(input) {
     {
       switch (input.EVENT) {
         case EventInput.SCORE:
+          disableButton();
           pauseGame();
           // TODO update score
           console.log(input.SCORE_MAP);
@@ -599,6 +600,7 @@ function status_trans(input) {
           break;
         
         case EventInput.ONE_OUT:
+          disableButton();
           pauseGame();
           enableButton();
           console.log("pause game since some one out")
@@ -607,6 +609,7 @@ function status_trans(input) {
         
         case EventInput.ONE_WIN:
           // pop out the result
+          disableButton();
           pauseGame();
           popAlert_redirect()
           client_status = ClientStatus.END;
