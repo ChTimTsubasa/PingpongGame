@@ -93,7 +93,7 @@ class GameServer(JsonWebsocketConsumer):
                         dir = -dir
 
         elif game.state == CurrentGame.GAMING_STATE:
-            if content['STATE'] == 'score':
+            if content['STATE'] == 'lose_score':
                 opponent = game.find_opponent(player)
                 opponent.add_score()
                 if opponent.score == game.max_score:

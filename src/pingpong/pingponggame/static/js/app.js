@@ -33,7 +33,7 @@ function sendBall() {
     p_y: ball.position[1],
     v_x: ball.velocity[0],
     v_y: ball.velocity[1],
-  }))
+  }));
 }
 
 
@@ -42,6 +42,13 @@ function sendPad() {
     TYPE: "PAD",
     x: paddle.position[0],
     y: paddle.position[1],
+  }));
+}
+
+function sendLoseScore() {
+  socket.send(JSON.stringify({
+    TYPE: "STATE",
+    STATE: "lose_score",
   }));
 }
 
