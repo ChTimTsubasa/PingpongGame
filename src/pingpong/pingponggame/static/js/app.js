@@ -14,6 +14,22 @@ EventInput = {
   ONE_WIN :   5,  // One of the user wins
 }
 
+//pop up an alert box
+function popAlert() {
+  confirm("Someone scored");
+  socket.send(JSON.stringify({
+    TYPE: "STATE",
+    STATE: 'ready',
+    VAL: true,
+  }));
+}
+
+function popAlert_redirect() {
+  confirm("Game is Over");
+  // redirect to main page
+  window.location.href = 'ws://' + window.location.host + '/main';
+}
+
 var P2DEBUG = false;
 
 var paddle;
