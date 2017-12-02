@@ -105,9 +105,9 @@ class GameServer(JsonWebsocketConsumer):
                     game.delete()
 
                 else:
-                    game.state = Game.READYING_STATE
+                    game.state = CurrentGame.READYING_STATE
                     game.save()
-                    response = {'TYPE': 'EVENT', 'EVENT': 'score'}
+                    response = {'TYPE': 'EVENT', 'EVENT': 4} # score message
                     score_map = {}
                     for player in game.player_set.all():
                         score_map[player.id] = player.score
@@ -139,10 +139,14 @@ class GameServer(JsonWebsocketConsumer):
         if player.currentGame:
             game = player.currentGame
             player.leave_game(game)
+            # all the players in this room have left
             if game.player_set.count() == 0:
                 game.delete()
+
+            # there are some players left in the room
             else:
                 game.state = CurrentGame.JOIN_STATE
+                game.save()
+                game.player_set.update(score=0, ready=False)
                 ONE_OUT_response = {'TYPE': 'EVENT', 'EVENT': 2}
                 self.group_send('g_%s' % game.id, ONE_OUT_response)
-                game.save()

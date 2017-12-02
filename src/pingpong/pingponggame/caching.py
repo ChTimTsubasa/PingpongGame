@@ -17,8 +17,8 @@ class GameCache():
     def delete_game(game):
         user_list = cache.get(game)
         for user in user_list:
-            cache.remove(user)
-        cache.remove(game)
+            cache.delete(user)
+        cache.delete(game)
 
     @staticmethod
     def get_opponents(user):

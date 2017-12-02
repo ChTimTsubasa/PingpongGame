@@ -125,7 +125,7 @@ function Physics(ui, width, height) {
   world.addBody(topWall);
 
   var bottomWall = new p2.Body({
-    position : [ 0, -10 ],
+    position : [ 0, -12.5 ],
     mass : 0
   });
   bottomWall.addShape(hwallShape);
@@ -173,7 +173,6 @@ function Physics(ui, width, height) {
     }
   }
 
-  //add$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   function setPaddle2(neo) {
     if (paddle2 !== neo) {
       world.removeBody(paddle2);
@@ -222,8 +221,8 @@ function Physics(ui, width, height) {
       ball.angularVelocity = ball.angle = 0;
 
       if (bottom) {
-        // world.removeBody(ball);
-        // ui.hitBottom(bottom);
+        console.log('lose one score')
+        sendLoseScore();
 
       } else if (paddle) {
         ui.hitPaddle(paddle);
@@ -288,7 +287,6 @@ function Physics(ui, width, height) {
     paddleTo = x;
   };
 
-//control paddle 2
   var paddleTo2 = 0;
   this.movePaddle2 = function(x) {
     paddleTo2 = x;
@@ -299,7 +297,6 @@ function Physics(ui, width, height) {
     setPaddle(fullPaddle);
   };
 
-  //add$$$$$$$$$$$$$$$$$$$$$$$
   this.fullPaddle2 = function() {
     setPaddle2(fullPaddle2);
   };
@@ -355,8 +352,6 @@ Stage(function(stage) {
   var width = 20, height = 26;
 
   var state = {
-    score : 0,
-    combo : 1,
     max : 0,
     ready : false,
     playing : false
@@ -402,7 +397,7 @@ Stage(function(stage) {
       return 20;
     },
     ballSpeed : function() {
-      return (13 + state.score * 0.05);
+      return (13);
     }
   }, width, height);
 
@@ -421,20 +416,6 @@ Stage(function(stage) {
   //User use mouse to move paddle
   p2view.on([ Mouse.START, Mouse.MOVE ], function(point) {
     physics.movePaddle(point.x);
-  });
-
-  var maxscore = Stage.string('d_').appendTo(board).pin({
-    alignX : 1,
-    alignY : 1,
-    offsetX : -1.5 * 16,
-    offsetY : -0.5 * 16
-  });
-
-  var myscore = Stage.string('d_').appendTo(board).pin({
-    alignX : 0,
-    alignY : 1,
-    offsetX : 1.5 * 16,
-    offsetY : -0.5 * 16
   });
 
   var restart = Stage.image('restart').appendTo(board).pin({
@@ -458,8 +439,6 @@ Stage(function(stage) {
     if (!state.ready) {
       p2view.tween(100).pin('alpha', 1);
       restart.hide();
-      state.score = 0, state.combo = 1;
-      updateStatus();
       physics.initGame();
     }
     state.ready = true;
@@ -477,8 +456,6 @@ Stage(function(stage) {
 
   function gameOver() {
     state.playing = false;
-    updateStatus();
-    state.max = Math.max(state.max, state.score);
     try {
       localStorage.setItem(STORE_KEY, state.max);
     } catch (e) {
@@ -489,21 +466,11 @@ Stage(function(stage) {
     Timeout.reset();
   }
 
-  function updateStatus() {
-    updateScore();
-  }
-
-  function updateScore() {
-    myscore.setValue(state.score);
-    maxscore.setValue(state.max);
-  }
-
   function nextTime() {
-    return 8000 - 20 * state.score;
+    return 8000; 
   }
 
 function fireGame(dir) {
-  //TODO count down for 3 second
   startGame();
   if (dir == -1) {
     ball.position[1] = -ball.position[1];
@@ -597,15 +564,16 @@ function status_trans(input) {
           pauseGame();
           // TODO update score
           console.log(input.score);
-          // POPout a timer and resend ready
+          // POPout a timer and resend ready 
           client_status = ClientStatus.PAUSE;
+          
           break;
         
         case EventInput.ONE_OUT:
           pauseGame();
-          console.log("pause game by one out")
-          // Start the timer
-          client_status = ClientStatus.PAUSE;
+          enableButton();
+          console.log("pause game since some one out")
+
           break;
         
         case EventInput.ONE_WIN:
