@@ -86,7 +86,7 @@ class GameServer(JsonWebsocketConsumer):
                     # their ball starting position
                     # Note that this is only for two players
                     dir = 1
-                    user_list = GameCache.get_users()
+                    user_list = GameCache.get_users(game)
                     for user in user_list:
                         response['DIR'] = dir
                         self.group_send("p_%s" % user.id, response)
@@ -124,9 +124,9 @@ class GameServer(JsonWebsocketConsumer):
 
         # TODO assert the game state in gaming
         # TODO compare time stamp in cache
-        opponents = Gamecache.get_opponents(self.message.user)
+        opponents = GameCache.get_opponents(self.message.user)
         for opponent in opponents:
-            self.group_send('p_%s' % opponent.id)
+            self.group_send('p_%s' % opponent.id, content)
 
         
     @transaction.atomic
@@ -144,5 +144,5 @@ class GameServer(JsonWebsocketConsumer):
             else:
                 game.state = CurrentGame.JOIN_STATE
                 ONE_OUT_response = {'TYPE': 'EVENT', 'EVENT': 2}
-                self.group_send('g_%s' % game.id)
+                self.group_send('g_%s' % game.id, ONE_OUT_response)
                 game.save()

@@ -42,7 +42,6 @@ function sendPad() {
     TYPE: "PAD",
     x: paddle.position[0],
     y: paddle.position[1],
-    ts: Math.floor(Date.now()),
   }));
 }
 
@@ -556,7 +555,11 @@ function status_trans(input) {
       switch (input.EVENT) {
         case EventInput.ALL_IN:
           enableButton();
-          status = ClientStatus.PREPARING;
+          client_status = ClientStatus.PREPARING;
+          break;
+        case EventInput.ONE_OUT:
+          disableButton();
+          break;
         default: break;
       }
       break;
@@ -572,7 +575,8 @@ function status_trans(input) {
           console.log('start game');
           disableButton();
           // TODO get the dir from message
-          fireGame(dir);
+          console.log(input.DIR)
+          fireGame(input.DIR);
           client_status = ClientStatus.GAMING;
         default:
           break;
@@ -581,7 +585,7 @@ function status_trans(input) {
     }
     case ClientStatus.GAMING:
     {
-      switch (input.event) {
+      switch (input.EVENT) {
         case EventInput.SCORE:
           pauseGame();
           // TODO update score
@@ -592,6 +596,7 @@ function status_trans(input) {
         
         case EventInput.ONE_OUT:
           pauseGame();
+          console.log("pause game by one out")
           // Start the timer
           client_status = ClientStatus.PAUSE;
           break;
@@ -604,12 +609,14 @@ function status_trans(input) {
     }
     case ClientStatus.PAUSE:
     {
-      switch (input.event) {
+      switch (input.EVENT) {
         case EventInput.START:
           fireGame(input.dir);
+          client_status = ClientStatus.GAMING;
           break;
         case EventInput.TIMEOUT:
           client_status = ClientStatus.END;
+          break;
       }
       break;
     }
