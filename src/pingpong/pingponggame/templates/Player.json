@@ -1,5 +1,6 @@
 {
     "players":[
-        {"opponent_id" : "{{opponent.id}}","html":"{{opponent.html|safe}}"}
+        {"you": "{{you.html|safe}}"},
+        {"opponent" :"{{opponent.html|safe}}"}
     ]
 }

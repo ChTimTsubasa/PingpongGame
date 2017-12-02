@@ -644,8 +644,6 @@ $(document).ready(function () {
   var game_id = $('#game').val()
   socket = new WebSocket('ws://' + window.location.host + '/game');
 
-  // sendRequest();
-  // window.setInterval(sendRequest, 1000);
   var d = new Date();
 
   socket.onmessage = function(e) {

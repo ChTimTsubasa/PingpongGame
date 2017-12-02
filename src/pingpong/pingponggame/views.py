@@ -77,11 +77,11 @@ def create_room(request):
 @login_required	
 def get_players_info(request, game_id):
 	context = {}
-	if not game_id:
-		return
-	game = get_object_or_404(CurrentGame, id=game_id)
-
-	context['opponent'] = game.opponent
+	player = get_object_or_404(Player, user=request.user)
+	game = player.CurrentGame
+	opponent = game.find_opponent(player)
+	context['you'] = player
+	context['opponent'] = opponent
 
 	return render(request, 'Player.json', context, content_type='application/json')
 
