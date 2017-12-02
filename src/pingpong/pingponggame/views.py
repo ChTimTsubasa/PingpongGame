@@ -78,8 +78,10 @@ def create_room(request):
 def get_players_info(request, game_id):
 	context = {}
 	player = get_object_or_404(Player, user=request.user)
-	game = player.CurrentGame
+	game = player.currentGame
 	opponent = game.find_opponent(player)
+	print(player)
+	print(opponent)
 	context['you'] = player
 	context['opponent'] = opponent
 

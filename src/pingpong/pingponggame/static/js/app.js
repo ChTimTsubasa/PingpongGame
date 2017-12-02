@@ -399,7 +399,7 @@ Stage(function(stage) {
         'scale' : 1 / pscale
       });
     },
-//add$$$$$$$$$$$$$$$$$$$$$$$$$$$44
+    
     fullPaddle2 : function(body) {
       body.ui = Stage.image('paddleFull').pin({
         'handle' : 0.5,
@@ -524,17 +524,12 @@ function handle(message) {
 function sendRequest() {
   gameid = $('#game').val();
   $.getJSON("getPlayersInfo/"+gameid, function(data) {
-      updatePlayerInfo(data);
+    console.log(data)
+    $('#you').html(data.players[0]);
+    $('#opponent').html(data.players[1]);
   });
 }
 
-//Update player information in web page
-function updatePlayerInfo(data) {
-  players = data.players;
-
-  $('#creator').html(players[0].html);
-  $('#opponent').html(players[1].html);
-}
 
 function status_trans(input) {
   console.log(client_status)
@@ -657,6 +652,10 @@ function clickReadyButton() {
 }
 
 $(document).ready(function () {
+  sendRequest()
+
+  window.setInterval(sendRequest, 1000)
+
   var game_id = $('#game').val()
   socket = new WebSocket('ws://' + window.location.host + '/game');
 
