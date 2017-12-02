@@ -65,7 +65,8 @@ def create_room(request):
 	context = {}
 	player = Player.objects.get(user=request.user)
 
-	game = player.create_new_game()
+	game = CurrentGame.objects.create()
+	player.join_game(game)
 
 	context["game"] = game.id
 	context["player"] = player.id
@@ -78,7 +79,7 @@ def get_players_info(request, game_id):
 	context = {}
 	if not game_id:
 		return
-	game = get_object_or_404(Game, id=game_id)
+	game = get_object_or_404(CurrentGame, id=game_id)
 
 	context['opponent'] = game.opponent
 
@@ -93,15 +94,15 @@ def join_room(request):
 	current_user = request.user
 	current_player = get_object_or_404(Player, user=current_user)
 	context['player'] = current_player.id
-	print (Game.objects.filter(opponent=None, completed=None))
 	if request.method == 'GET':
-		joined_game = current_player.join_game_random()
+		joined_game = CurrentGame.get_game_random()
 		if not joined_game:
 			errors.append('There is no room available now')
 			context['errors'] = errors
 			context['form'] = JoinRoomForm()
 			return render(request, 'UserMainPage.html', context)
-
+		print(joined_game)
+		current_player.join_game(joined_game)
 		context['game'] = joined_game.id
 
 	if request.method == 'POST':
@@ -111,8 +112,10 @@ def join_room(request):
 			return render(request, 'UserMainPage.html', context)
 
 		room_id = request.POST['room_id']
-		
-		game = current_player.join_game_by_id(room_id)
+		# There should not be an error here since we have already
+		# checked in the form
+		game = CurrentGame.get_game_by_id(room_id)
+		current_player.join_game(game)
 		context['game'] = game.id
 
 	return render(request, 'GameRoom.html', context)

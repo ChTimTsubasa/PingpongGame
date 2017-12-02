@@ -1,7 +1,10 @@
 from django.db import models
+from django.db.models import Q
+
 from django.contrib.auth.models import User
 
 from django.template.loader import render_to_string
+
 
 from channels import Group
 
@@ -18,6 +21,9 @@ class Player(models.Model):
 	# score of the user in the current game. When there is a current game
 	score = models.IntegerField(default=0)
 
+	# if the user has clicked ready in the game
+	ready = models.BooleanField(default=False)
+
 	# current game that the player is playing
 	currentGame = models.ForeignKey(
 		'CurrentGame',
@@ -26,11 +32,15 @@ class Player(models.Model):
 		null=True,
 	)
 
+	def __unicode__(self):
+		return 'Player #{0}'.format(self.pk)
+
 	def join_game(self, game):
 		if self.currentGame:
 			# TODO more appropriate error should be thrown
 			raise AttributeError('you are already in a game')
 		self.currentGame = game
+		self.ready = False
 		self.save()
 
 	def leave_game(self, game):
@@ -38,6 +48,15 @@ class Player(models.Model):
 			# TODO more appropriate error should be thrown
 			raise AttributeError('you are not in this game')
 		self.currentGame = None
+		self.ready = False
+		self.save()
+	
+	def set_ready(self, ready_state):
+		self.ready = ready_state
+		self.save()
+
+	def add_score(self):
+		self.score = self.score + 1
 		self.save()
 
 	@property
@@ -48,13 +67,13 @@ class Player(models.Model):
 # Game Model
 class CurrentGame(models.Model):
 	JOIN_STATE = 0
-	READY_STATE = 1
+	READYING_STATE = 1
 	GAMING_STATE = 2
 	PAUSE_STATE = 3
 
 	GAME_STATE = (
 		(JOIN_STATE, 'Join'),
-		(READY_STATE, 'Ready'),
+		(READYING_STATE, 'Ready'),
 		(GAMING_STATE, 'Gaming'),
 		(PAUSE_STATE, 'Pause'),
 	)
@@ -67,7 +86,6 @@ class CurrentGame(models.Model):
 	max_score = models.IntegerField(default=3)
 
 	#Dates
-	completed = models.DateTimeField(null=True, blank=True)
 	created = models.DateTimeField(auto_now_add=True)
 
 	def __unicode__(self):
@@ -84,7 +102,7 @@ class CurrentGame(models.Model):
 	@staticmethod
 	def get_game_by_id(id):
 		try:
-			game = CurrentGame.objects.filter(state=JOIN_STATE).get(pk=id)
+			game = CurrentGame.objects.filter(state=CurrentGame.JOIN_STATE).get(pk=id)
 		except CurrentGame.DoesNotExist:
 			return None
 
@@ -93,6 +111,18 @@ class CurrentGame(models.Model):
 		
 		return None
 
+	# The room is full of players
+	def full(self):
+		return self.player_set.count() == self.max_player_num
+
+	# All players in the room is ready
+	def all_ready(self):
+		return self.player_set.filter(ready=True).count() == self.max_player_num
+
+	# Find opponent
+	# this is just for two players game
+	def find_opponent(self, player):
+		return self.player_set.exclude(id=player.id).first()
 
 class GameRecord(models.Model):
 	# Winner of this game

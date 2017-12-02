@@ -8,7 +8,7 @@ from pingponggame.models import *
 class PlayerForm(forms.ModelForm):
 	class Meta:
 		model = Player
-		exclude = ('user', 'score', 'currentGame')
+		fields = ('nickname',)
 		
 #User registration form
 class UserForm(forms.ModelForm):
@@ -41,7 +41,7 @@ class JoinRoomForm(forms.Form):
 
 	def clean_room_id(self):
 		room_id = self.cleaned_data.get('room_id')
-		if not Game.get_by_id(room_id):
+		if not CurrentGame.get_game_by_id(room_id):
 			raise forms.ValidationError('No available room with id %s' % room_id)
 		
 		return room_id

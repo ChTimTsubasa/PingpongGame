@@ -26,14 +26,6 @@ var client_status = 0;
 
 console.log('generating app.js!!!!!!!!!!');
 
-function sendReady() {
-  console.log("ready")
-  socket.send(JSON.stringify({
-    TYPE: "STATE",
-    STATE: "start"
-  }))
-}
-
 function sendBall() {
   socket.send(JSON.stringify({
     TYPE: "BALL",
@@ -524,9 +516,8 @@ function pauseGame() {
 function handle(message) {
   console.log(message)
   switch (message.TYPE) {
-    case 'STATE':
-      var input = message.INPUT;
-      status_trans(input);
+    case 'EVENT':
+      status_trans(message);
       break;
     case 'PAD':
       physics.movePaddle2(-message.x);
@@ -557,13 +548,13 @@ function updatePlayerInfo(data) {
 }
 
 function status_trans(input) {
+  console.log(client_status)
+  console.log(input.EVENT)
   switch(client_status) {
     case ClientStatus.WAIT:
     {
-      console.log("status in WAIT");
-      switch (input.event) {
+      switch (input.EVENT) {
         case EventInput.ALL_IN:
-          console.log('Event in ALL_IN');
           enableButton();
           status = ClientStatus.PREPARING;
         default: break;
@@ -572,7 +563,7 @@ function status_trans(input) {
     }
     case ClientStatus.PREPARING:
     {
-      switch (input.event) {
+      switch (input.EVENT) {
         case EventInput.ONE_OUT:
           disableButton();
           client_status = ClientStatus.WAIT;
@@ -595,13 +586,13 @@ function status_trans(input) {
           pauseGame();
           // TODO update score
           console.log(input.score);
+          // POPout a timer and resend ready
           client_status = ClientStatus.PAUSE;
           break;
         
         case EventInput.ONE_OUT:
           pauseGame();
           // Start the timer
-          // POPout a timer and wait
           client_status = ClientStatus.PAUSE;
           break;
         
@@ -654,12 +645,14 @@ function clickReadyButton() {
     socket.send(JSON.stringify({
       TYPE: "STATE",
       STATE: 'ready',
+      VAL: true,
     }));
     $('#ready_but').text("Click to unready");
   } else {
     socket.send(JSON.stringify({
       TYPE: "STATE",
-      STATE: 'unready',
+      STATE: 'ready',
+      VAL: false,
     }));
     $('#ready_but').text("Click to ready");
   }
@@ -669,8 +662,8 @@ $(document).ready(function () {
   var game_id = $('#game').val()
   socket = new WebSocket('ws://' + window.location.host + '/game');
 
-  sendRequest();
-  window.setInterval(sendRequest, 1000);
+  // sendRequest();
+  // window.setInterval(sendRequest, 1000);
   var d = new Date();
 
   socket.onmessage = function(e) {

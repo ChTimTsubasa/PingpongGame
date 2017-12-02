@@ -24,49 +24,38 @@ class GameServer(JsonWebsocketConsumer):
         Called to return the list of groups to automatically add/remove
         this connection to/from.
         """
-
-        print(self.message.user)
         player = Player.objects.get(user=self.message.user)
         # When current player does exist and has a current game
-        if player and player.current_game:
-            game = player.current_game
-            group = GameCache.store_group(player.user.id)
-            print("GROUPING")
-            print(group)
-            print(self.groups)
-            return ["game_%s" % game.id, group]
+        print(player)
+        print(player.currentGame)
+        if player and player.currentGame:
+            game = player.currentGame
+            return ["g_%s" % game.id, "p_%s" % player.user.id]
 
     @transaction.atomic
     def connect(self, message, **kwargs):
         """
         Perform things on connection start
         """
-        print("connect")
-
         player = Player.objects.get(user=message.user)
         # When current player does not exist or do not have a current game
-        if not player or not player.current_game:
+        if not player or \
+            not player.currentGame or \
+            player.currentGame.state != CurrentGame.JOIN_STATE:
             message.reply_channel.send({"accept": False})
             return
         
         #available_players means how many players connect to the current game room
-        game = player.current_game
-        game.player_ready()
-        # Accept the connection; 
+        game = player.currentGame
         message.reply_channel.send({"accept": True})
-        print(game.available_players)
-        if game.available_players == 2:
-            game.available_players = 0
-            game.state = Game.READY_STATE
+        if game.full():
+            game.state = CurrentGame.READYING_STATE
             game.save()
-            response = {'TYPE': 'STATE'}
-            response['INPUT'] =  {'event': 1}    # 1 is ALL_IN
-            # Initialize the game
-            user1 = game.creator.user.id
-            user2 = game.opponent.user.id
-            GameCache.init_game(user1, user2, game.id)
-            self.group_send('game_%s' % game.id, response)
-
+            # 1 is ALL_IN
+            ALL_IN_response = {'TYPE': 'EVENT', 'EVENT': 1}    
+            # Tell all clients that they are all in
+            print(ALL_IN_response)
+            self.group_send('g_%s' % game.id, ALL_IN_response)
 
     def receive(self, content, **kwargs):
         """
@@ -78,84 +67,82 @@ class GameServer(JsonWebsocketConsumer):
         else:
             self.game_handle(content)
     
+    @transaction.atomic
     def state_handle(self, content):
         player = Player.objects.get(user=self.message.user)
-        game = player.current_game
-        if (game.state == Game.READY_STATE):
+        game = player.currentGame
+        if game.state == CurrentGame.READYING_STATE:
             if content['STATE'] == 'ready':
-                game.player_ready()
-                if game.available_players == 2:
-                    print("going to start game")
-                    game.state = Game.GAMING_STATE
+                player.set_ready(content['VAL'])
+                if game.all_ready():
+                    print("starting game")
+                    game.state = CurrentGame.GAMING_STATE
                     game.save()
-                    response = {'TYPE': 'STATE', 'STATE': 'start'}
-                    user1 = game.creator.user.id
 
-                    user2 = game.opponent.user.id
+                    GameCache.init_game(game)
+                    response = {'TYPE': 'EVENT', 'EVENT': 3} # 3 is START
 
-                    # user 1 should be positive
-                    response['DIR'] = 1
-                    oppo_group = GameCache.get_oppo_group(user1)
-                    self.group_send(oppo_group, response)
+                    # Send the start command to all players and indicating
+                    # their ball starting position
+                    # Note that this is only for two players
+                    dir = 1
+                    user_list = GameCache.get_users()
+                    for user in user_list:
+                        response['DIR'] = dir
+                        self.group_send("p_%s" % user.id, response)
+                        dir = -dir
 
-                    # user 2 should be negative
-                    response['DIR'] = -1
-                    oppo_group = GameCache.get_oppo_group(user2)
-                    self.group_send(oppo_group, response)
+        elif game.state == CurrentGame.GAMING_STATE:
+            if content['STATE'] == 'score':
+                opponent = game.find_opponent(player)
+                opponent.add_score()
+                if opponent.score == game.max_score:
+                    response = {'TYPE': 'EVENT', 'EVENT': 'end', 'WINNER': opponent.id}
+                    self.group_send('g_%s' % game.id, response)
+                    
+                    # TODO log the current game to game record
+                    game.player_set.update(score=0, ready=False)
+                    game.delete()
 
-            if content['STATE'] == 'unready':
-                game.player_gone()
-                if game.available_players == 0:
-                    pass
+                else:
+                    game.state = Game.READYING_STATE
+                    game.save()
+                    response = {'TYPE': 'EVENT', 'EVENT': 'score'}
+                    score_map = {}
+                    for player in game.player_set.all():
+                        score_map[player.id] = player.score
+                    response['SCORE_MAP'] = score_map
 
-        # There may be race issue here
-        elif content['STATE'] == 'score':
-            game.add_oppo_player_score(player)
-            if game.creator_score == 3 or game.opponent_score == 3:
-                game.state = Game.END_STATE
-                winner = game.determine_winner()
-                response = {'TYPE': 'STATE', 'STATE': 'end', 'WINER': winer.user.id}
-                self.group_send('game_%s' % game.id, response)
-                GameCache.delete_game(
-                                game.creator.user.id,
-                                game.opponent.user.id
-                            )
+                    # broadcast the score to all users
+                    self.group_send('g_%s' % game.id, response)
 
-            else:
-                game.state = Game.PAUSE_STATE
-                game.available_players = 0            
-                game.save()
-                response = {'TYPE': 'STATE', 'STATE': 'pause'}
-                self.group_send('game_%s' % game.id, response)
+                GameCache.delete_game(game)
 
     def game_handle(self, content):
         c_type = content['TYPE']
         response = {}
 
-        if c_type == 'PAD':
-            user_id = self.message.user.id
-            GameCache.update_pad(user_id, content)
-            oppo_pad = GameCache.get_oppo_pad(user_id)
-            if oppo_pad:
-                self.send(oppo_pad.message())
+        # TODO assert the game state in gaming
+        # TODO compare time stamp in cache
+        opponents = Gamecache.get_opponents(self.message.user)
+        for opponent in opponents:
+            self.group_send('p_%s' % opponent.id)
 
-        elif c_type == 'BALL':
-            user_id = self.message.user.id
-            game_id = GameCache.get_game(user_id)
-            oppo_group = GameCache.get_oppo_group(user_id)
-            ball = GameCache.update_ball(game_id, content)
-            self.group_send(oppo_group, ball.message())
-
-
+        
+    @transaction.atomic
     def disconnect(self, message, **kwargs):
         """
         Perform things on connection close
         """
+        # TODO think about it
         player = Player.objects.get(user=message.user)
-        game = player.current_game
-        # this game is over
-        game.player_gone()
-        player.leave_game()
-        print (game.available_players)
-        Group("game_%s" % game.id).discard(message.reply_channel)
-        
+        if player.currentGame:
+            game = player.currentGame
+            player.leave_game(game)
+            if game.player_set.count() == 0:
+                game.delete()
+            else:
+                game.state = CurrentGame.JOIN_STATE
+                ONE_OUT_response = {'TYPE': 'EVENT', 'EVENT': 2}
+                self.group_send('g_%s' % game.id)
+                game.save()
