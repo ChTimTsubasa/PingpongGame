@@ -27,7 +27,7 @@ function popAlert() {
 function popAlert_redirect() {
   confirm("Game is Over");
   // redirect to main page
-  window.location.href = 'ws://' + window.location.host + '/main';
+  window.location.href = 'http://' + window.location.host + '/main';
 }
 
 var P2DEBUG = false;
@@ -490,13 +490,13 @@ Stage(function(stage) {
 
   function gameOver() {
     state.playing = false;
-    try {
-      localStorage.setItem(STORE_KEY, state.max);
-    } catch (e) {
-    }
+    // try {
+    //   localStorage.setItem(STORE_KEY, state.max);
+    // } catch (e) {
+    // }
     physics.gameOver();
-    restart.show();
-    p2view.tween(100).pin('alpha', 0.5);
+    // restart.show();
+    // p2view.tween(100).pin('alpha', 0.5);
     Timeout.reset();
   }
 
@@ -592,8 +592,8 @@ function status_trans(input) {
         case EventInput.SCORE:
           pauseGame();
           // TODO update score
-          console.log(input.score);
-          // POPout a timer and resend ready 
+          console.log(input.SCORE_MAP);
+          popAlert()
           client_status = ClientStatus.PAUSE;
           
           break;
@@ -607,7 +607,10 @@ function status_trans(input) {
         
         case EventInput.ONE_WIN:
           // pop out the result
+          pauseGame();
+          popAlert_redirect()
           client_status = ClientStatus.END;
+          break;
       }
       break;
     }

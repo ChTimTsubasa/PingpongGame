@@ -6,6 +6,7 @@ from .models import Player, CurrentGame
 
 from django.db import transaction
 
+from django.core.cache import cache
 from .caching import GameCache
 
 import datetime
@@ -61,7 +62,7 @@ class GameServer(JsonWebsocketConsumer):
         """
         Called when a message is received with decoded JSON content
         """
-        print(content)
+        # print(content)
         if content['TYPE'] == 'STATE':
             self.state_handle(content)
         else:
@@ -69,6 +70,7 @@ class GameServer(JsonWebsocketConsumer):
     
     @transaction.atomic
     def state_handle(self, content):
+        print(content)
         player = Player.objects.get(user=self.message.user)
         game = player.currentGame
         if game.state == CurrentGame.READYING_STATE:
@@ -96,8 +98,10 @@ class GameServer(JsonWebsocketConsumer):
             if content['STATE'] == 'lose_score':
                 opponent = game.find_opponent(player)
                 opponent.add_score()
+                game.player_set.update(ready=False)
                 if opponent.score == game.max_score:
-                    response = {'TYPE': 'EVENT', 'EVENT': 'end', 'WINNER': opponent.id}
+                    # One people win
+                    response = {'TYPE': 'EVENT', 'EVENT': 5, 'WINNER': opponent.id}
                     self.group_send('g_%s' % game.id, response)
                     
                     # TODO log the current game to game record
@@ -122,8 +126,10 @@ class GameServer(JsonWebsocketConsumer):
         c_type = content['TYPE']
         response = {}
 
-        # TODO assert the game state in gaming
-        # TODO compare time stamp in cache
+        # assert the game state in gaming
+        if not cache.get(self.message.user):
+            return
+
         opponents = GameCache.get_opponents(self.message.user)
         for opponent in opponents:
             self.group_send('p_%s' % opponent.id, content)
