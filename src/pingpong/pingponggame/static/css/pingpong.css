@@ -7,9 +7,8 @@ body.colored_bg {
 }
 
 .opac_bg {
-	background-color: rgb(255,255,255); opacity: 0.5;
+	background: rgba(255,255,255,0.6);
 }
-
 
 .block {
 	border-style: solid;
@@ -101,7 +100,6 @@ th, td {
 
 .w3-myfont {
     font-family: "Comic Sans MS", cursive, sans-serif;
-	color: white;
 }
 .w3-allerta {
 	font-family: "Allerta Stencil", Sans-serif;
