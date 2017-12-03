@@ -139,6 +139,13 @@ def get_latest_game(request, game_id):
 	context = {}
 	games = GameRecord.objects.filter(id__gt = game_id)
 	rows = []
+	if not games.count():
+		context['latest_game'] = game_id
+		context['games'] = rows
+
+		return render(request, 'Games.json', context, content_type='application/json')
+	
+	context['latest_game'] = games.last().id
 	for game in games:
 		html = render_to_string(
 				"Game.html", 
@@ -149,10 +156,6 @@ def get_latest_game(request, game_id):
 				}
 			).replace("\n", "")
 		rows.append(html)
-	if not games.count():
-		context['latest_game'] = game_id
-	else:
-		context['latest_game'] = games.last().id
 
 	context['games'] = rows
 
