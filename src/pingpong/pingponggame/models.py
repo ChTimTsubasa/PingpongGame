@@ -37,7 +37,6 @@ class Player(models.Model):
 
 	def join_game(self, game):
 		if self.currentGame:
-			# TODO more appropriate error should be thrown
 			raise AttributeError('you are already in a game')
 		self.currentGame = game
 		self.ready = False
@@ -49,6 +48,7 @@ class Player(models.Model):
 			raise AttributeError('you are not in this game')
 		self.currentGame = None
 		self.ready = False
+		self.score = 0
 		self.save()
 	
 	def set_ready(self, ready_state):

@@ -143,7 +143,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'asgi_redis.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('localhost', 6379)],
+            'hosts': [('pp.d2kiej.ng.0001.use1.cache.amazonaws.com', 6379)],
         },
         'ROUTING': 'pingpong.routing.routing',
     }
@@ -152,6 +152,6 @@ CHANNEL_LAYERS = {
 CACHES = {
     "default": {
         "BACKEND": "redis_cache.RedisCache",
-        'LOCATION': 'localhost:6379',
+        'LOCATION': 'pp.d2kiej.ng.0001.use1.cache.amazonaws.com:6379',
     }
 }

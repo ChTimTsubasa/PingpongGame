@@ -110,6 +110,8 @@ class GameServer(JsonWebsocketConsumer):
                     self.group_send('g_%s' % game.id, response)
                     
                     # log the current game to game record
+                    game.player_set.update(ready=False, score=0)
+                    game.delete()
                     GameRecord.record(game)
 
                 else:
