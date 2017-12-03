@@ -159,7 +159,7 @@ function Physics(ui, width, height) {
     mass : 0
   });
   fullPaddle2.paddleWidth = 3;
-  fullPaddle2.addShape(fullPaddleShape);
+  // fullPaddle2.addShape(fullPaddleShape);
   fullPaddle2.isPaddle = false;
   fullPaddle2.motionState = p2.Body.STATIC;
   ui.fullPaddle2(fullPaddle2);
@@ -440,9 +440,9 @@ Stage(function(stage) {
     }
   };  
 
-  var restart = Stage.image('restart').appendTo(board).pin({
-    align : 0.5,
-  });
+  // var restart = Stage.image('restart').appendTo(board).pin({
+  //   align : 0.5,
+  // });
   
   stage.tick(function(t) {
     if (state.playing) {
@@ -460,7 +460,7 @@ Stage(function(stage) {
   function initGame() {
     if (!state.ready) {
       p2view.tween(100).pin('alpha', 1);
-      restart.hide();
+      // restart.hide();
       physics.initGame();
     }
     state.ready = true;
