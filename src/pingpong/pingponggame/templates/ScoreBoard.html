@@ -3,6 +3,11 @@
 {% block title %}ScoreBoard page{% endblock %}
 
 {% block navbar %}
+	<ul class="navbar-nav ml-auto">
+		<li class="nav-item ">
+			<a class="nav-link w3-text-white w3-large w3-myfont" href="{% url 'logout' %}"><b>Log Out</b></a>
+		</li>					
+	</ul>
 {% endblock %}
 
 {% block bodycontent %}

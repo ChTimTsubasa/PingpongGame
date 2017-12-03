@@ -5,12 +5,12 @@
 {% block navbar %}
     <ul class="navbar-nav ml-auto">
         <li class="nav-item ">
-            <a class="nav-link whitetext" href="{% url 'login' %}"><h5>Log in</h5></a>
+            <a class="nav-link w3-text-white w3-large w3-myfont" href="{% url 'login' %}"><b>Log in</b></a>
         </li>                   
     </ul>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item ">
-            <a class="nav-link whitetext" href="{% url 'logout' %}"><h5>Log Out</h5></a>
+            <a class="nav-link w3-text-white w3-large w3-myfont" href="{% url 'logout' %}"><b>Log Out</b></a>
         </li>                   
     </ul>
 {% endblock %}
@@ -64,7 +64,7 @@
 						<br><br>
 					</form>	
 					<br>
-					<a class="smalltext w3-myfont" href="{% url 'login'%}">
+					<a class="smalltext w3-myfont text-center w3-text-indigo" href="{% url 'login'%}">
 						Already have one? Sign in
 					</a>
 					<br>
