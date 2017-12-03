@@ -31,7 +31,7 @@ SECRET_KEY = config.get('secrets', 'SECRET_KEY')
 # DEBUG = True
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['ec2-54-172-128-209.compute-1.amazonaws.com']
 
 
 # Application definition
