@@ -12,34 +12,35 @@
 {% endblock %}
 
 {% block bodycontent %}
+<br>
+<div class="w3-jumbo w3-lobster w3-text-white text-center">Welcome to Ping Pong Game !</div><br><br>
 	<div class="row">
-		<span class="w3-xxxlarge w3-myfont w3-text-white">Welcome to Ping Pong Game !</span>
-
+		<br>
 		<div class="col-sm-3"> </div>
-		<div class="col-sm-6 normaltext opac_bg"> 
+		<div class="col-sm-6 text-center"> 
 			<br>
-			<br><br>
+			<br>
 			{% if form.errors %}
 			<p class="alert">Incorrect username or password</p>
 			{% endif %}				
-			<form class="container normaltext w3-card-2" action="{% url 'login' %}" method="post" class="form-signin">
+			<form class="container w3-card-2 opac_bg" action="{% url 'login' %}" method="post" class="form-signin">
 				<br>
-
-				<div class="text-center">
+				<div class="w3-myfont w3-xlarge  text-center">
 					{% for field in form.visible_fields %}
 					<label>{{field.label_tag}}</label>
 					{{field}}<br>
-					<td class="alert">{{field.errors}}</td>
+					<td class="alert w3-myfont w3-xlarge text-center">{{field.errors}}</td>
 					{% endfor %}
-					<button type="submit" class="btn w3-button w3-black">Login</button>	
+					<button type="submit" class="w3-button w3-black w3-round-large w3-medium">Login</button>	
 				</div>						
 				
 				<input type="hidden" name="next" value="{{next}}" />
 				{% csrf_token %}
 				<br>
+				<a class="w3-myfont text-center" href="{% url 'registration' %}"><p>Don't have an account? Register one !</p></a>	
+				
 			</form>
-			<br>
-			<a class="w3-myfont" href="{% url 'registration' %}">Don't have an account? Register one !</a>	
+			
 			<br>
 		</div>
 		<div class="col-sm-3"> </div>
