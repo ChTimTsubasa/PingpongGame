@@ -14,6 +14,14 @@ EventInput = {
   ONE_WIN :   5,  // One of the user wins
 }
 
+var P2DEBUG = false;
+var paddle;
+var paddle2;
+var ball;
+var socket;
+var padIntervalID;
+var client_status = 0;
+
 //pop up an alert box
 function popAlert() {
   confirm("Someone scored");
@@ -30,17 +38,6 @@ function popAlert_redirect() {
   window.location.href = 'http://' + window.location.host + '/main';
 }
 
-var P2DEBUG = false;
-
-var paddle;
-var paddle2;
-var ball;
-var socket;
-var padIntervalID;
-
-var client_status = 0;
-
-console.log('generating app.js!!!!!!!!!!');
 
 function sendBall() {
   socket.send(JSON.stringify({
@@ -51,7 +48,6 @@ function sendBall() {
     v_y: ball.velocity[1],
   }));
 }
-
 
 function sendPad() {
   socket.send(JSON.stringify({
@@ -72,7 +68,6 @@ function sendLoseScore() {
 function Physics(ui, width, height) {
 
   var world = this.world = new p2.World({
-    // broadphase : new p2.SAPBroadphase(),
     gravity : [ 0, 0 ],
     defaultFriction : 0
   });
@@ -100,10 +95,8 @@ function Physics(ui, width, height) {
       [ -1.8, -0.1 ] ]);
   fullPaddleShape.material = paddleMater;
 
-
   var BALL = 1, WALL = 2;
   
-
   vwallShape.collisionGroup = WALL;
   hwallShape.collisionGroup = WALL;
   fullPaddleShape.collisionGroup = WALL;
@@ -132,13 +125,13 @@ function Physics(ui, width, height) {
   rightWall.ui = null;
   world.addBody(rightWall);
 
-  var topWall = new p2.Body({
-    position : [ 0, +12.5 ],
-    mass : 0
-  });
-  topWall.addShape(hwallShape);
-  topWall.ui = null;
-  world.addBody(topWall);
+  // var topWall = new p2.Body({
+  //   position : [ 0, +12.5 ],
+  //   mass : 0
+  // });
+  // topWall.addShape(hwallShape);
+  // topWall.ui = null;
+  // world.addBody(topWall);
 
   var bottomWall = new p2.Body({
     position : [ 0, -12.5 ],
@@ -274,7 +267,7 @@ function Physics(ui, width, height) {
     ball = findBall();
     var a = Math.PI * 0.3 * 0.4 - 0.2;
     var speed = ui.ballSpeed();
-    ball.velocity = [ speed * Math.sin(a), speed * Math.cos(a) ];
+    ball.velocity = [ speed * Math.sin(a) * 0.8, speed * Math.cos(a) * 0.8 ];
   };
 
   this.gameOver = function() {
