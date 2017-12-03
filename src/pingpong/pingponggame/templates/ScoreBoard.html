@@ -7,30 +7,37 @@
 
 {% block bodycontent %}
 <div class="row">
-	<div class="col-1"></div>
-	<div class="col-3">
-		<span class="boldtext">Nick Name:</span> <span class="normaltext">{{current_player.nickname}}</span><br>
-		<span class="boldtext" >User Name:</span> <span class="normaltext">{{current_player.user.username}}</span><br>
+	<div class="col-4 ">
+		<br>
+		<div class="container w3-card-2">
+			<span class="w3-xlarge w3-myfont"><b>Nick Name:</b></span> <span class="w3-xlarge w3-myfont"><b>{{current_player.nickname}}</b></span><br>
+			<span class="w3-xlarge w3-myfont" ><b>User Name:</b></span> <span class="w3-xlarge w3-myfont"><b>{{current_player.user.username}}</b></span><br>	
+		</div>
 	</div>
-	<div class="col-7 block scoreboard">
-		<span class="largertext">Score Board:</span> <br>
-		<input id='latest_game', type='hidden' value = '-1'>
-		<table id="scoreboard" class="normaltext" border="1">
-			<thead>
-				<tr>
-					<th>Game Record ID</th>
-					<th>Winner</th>
-					<th>Created Time</th>
-					<th>Completed Time</th>
-				</tr>
-			</thead>
-			<tbody>
+	<div class="col-1"></div>
+	<div class="col-7 scoreboard">
+		<br>
+		<div class="container w3-card-2">
+				<span class="w3-xlarge w3-myfont">Score Board:</span> <br>
+				<input id='latest_game', type='hidden' value = '-1'>
+				<table id="scoreboard" border="1">
+					<thead>
+						<tr>
+							<th class="w3-myfont">Game Record ID</th>
+							<th class="w3-myfont">Winner</th>
+							<th class="w3-myfont">Created Time</th>
+							<th class="w3-myfont">Completed Time</th>
+						</tr>
+					</thead>
+					<tbody>
+		
+					</tbody>
+				</table>	
+				<br>		
+		</div>
 
-			</tbody>
-		</table>
 	</div>
 
-	<div class="col-1"></div>
 </div>
 	
 
