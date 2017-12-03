@@ -23,6 +23,10 @@
 	</ul>	
 {% endblock %}
 
+{% block body_head %}
+<body class="colored_bg">
+{% endblock %}
+
 {% block bodycontent %}
 	{% for error in errors %}
 		<p class="alert">{{error}}</p>
@@ -30,7 +34,7 @@
 	<div class="row">
 
 		<div class="col-3">
-			<div class="normaltext w3-panel w3-card-4">
+			<div class="normaltext w3-panel w3-card-4 opac_bg">
 				<br>
 				<p><span class="boldtext ">User Name:</span> <span class="normaltext">{{user.username}}</span></p>
 				<p><span class="boldtext ">First Name:</span> <span class="normaltext">{{user.first_name}}</span> </p>
@@ -40,12 +44,12 @@
 			</div>
 		</div>
 		<div class="col-2"></div>
-		<div class="col-5 w3-panel w3-card-4">
+		<div class="col-5 w3-panel w3-card-4 opac_bg">
 			<br>
 			<span class="w3-xxlarge w3-myfont"> Start Play Your Game! </span>
 			<br> <br>
 			<!-- <div class="block"> -->
-				<div class="w3-card w3-container w3-white w3-hover-pale-green">
+				<div class="w3-card w3-container opac_bg w3-hover-pale-green">
 					<p class="w3-xlarge">Create your own room</p>
 					<form method="get" action="{% url 'createRoom' %}">
 						{% csrf_token %}
@@ -53,7 +57,7 @@
 					</form>
 				</div>
 				<br>
-				<div class="w3-card w3-container w3-white w3-hover-pale-yellow">
+				<div class="w3-card w3-container opac_bg w3-hover-pale-yellow">
 					<p class="w3-xlarge"> Randomly Join a room </p>
 					<form method="get" action="{% url 'joinRoom' %}">
 						{% csrf_token %}
@@ -61,7 +65,7 @@
 					</form>
 				</div>
 				<br>
-				<div class="w3-card w3-container w3-white w3-hover-pale-red">
+				<div class="w3-card w3-container opac_bg w3-hover-pale-red">
 					<p class="w3-xlarge">Join a room given an ID</p>
 					<form class="normaltext" method="post" action="{% url 'joinRoom' %}">
 						{% csrf_token %}

@@ -10,11 +10,15 @@
 	</ul>
 {% endblock %}
 
+{% block body_head %}
+<body class="colored_bg">
+{% endblock %}
+
 {% block bodycontent %}
 <div class="row">
 	<div class="col-4 ">
 		<br>
-		<div class="container w3-card-2">
+		<div class="container w3-card-2  opac_bg">
 			<span class="w3-xlarge w3-myfont"><b>Nick Name:</b></span> <span class="w3-xlarge w3-myfont"><b>{{current_player.nickname}}</b></span><br>
 			<span class="w3-xlarge w3-myfont" ><b>User Name:</b></span> <span class="w3-xlarge w3-myfont"><b>{{current_player.user.username}}</b></span><br>	
 		</div>
@@ -22,7 +26,7 @@
 	<div class="col-1"></div>
 	<div class="col-7 scoreboard">
 		<br>
-		<div class="container w3-card-2">
+		<div class="container w3-card-2  opac_bg">
 				<span class="w3-xlarge w3-myfont"><b>Score Board:</b></span> <br>
 				<input id='latest_game', type='hidden' value = '-1'>
 				<table id="scoreboard" border="1">

@@ -8,11 +8,11 @@
             <a class="nav-link w3-text-white w3-large w3-myfont" href="{% url 'login' %}"><b>Log in</b></a>
         </li>                   
     </ul>
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item ">
-            <a class="nav-link w3-text-white w3-large w3-myfont" href="{% url 'logout' %}"><b>Log Out</b></a>
-        </li>                   
-    </ul>
+
+{% endblock %}
+
+{% block body_head %}
+<body class="colored_bg">
 {% endblock %}
 
 {% block bodycontent %}
@@ -21,7 +21,7 @@
 				<div class="col-sm-3"> </div>
 				<div class="col-sm-6"> 
 					<br><br>
-					<form  class="form-signin normaltext w3-myfont w3-card-2" enctype="multipart/form-data" action="{% url 'registration' %}" method="POST">
+					<form  class=" text-center form-signin normaltext w3-myfont w3-card-2 opac_bg" enctype="multipart/form-data" action="{% url 'registration' %}" method="POST">
 						{% for error in user_form.non_field_errors %}
 							<p class="alert">{{error}}</p>
 						{% endfor %}
@@ -61,13 +61,14 @@
 						<br>
 						<button type="submit" class="btn w3-button w3-black">Register</button>		
 						{% csrf_token %}	
+						<br>
+						<br>
+						<a class="smalltext w3-myfont text-center w3-text-indigo" href="{% url 'login'%}">
+							Already have one? Sign in
+						</a>
 						<br><br>
 					</form>	
-					<br>
-					<a class="smalltext w3-myfont text-center w3-text-indigo" href="{% url 'login'%}">
-						Already have one? Sign in
-					</a>
-					<br>
+
 				</div>
 				<div class="col-sm-3"> </div>
 				
