@@ -11,13 +11,14 @@
 		<div class="col-sm-3"> </div>
 		<div class="col-sm-6 normaltext"> 
 			<br>
-			<span class="largertext">Welcome to Ping Pong Game !</span>
+			<span class="w3-xxxlarge w3-myfont">Welcome to Ping Pong Game !</span>
 			<br><br>
 			{% if form.errors %}
 			<p class="alert">Incorrect username or password</p>
 			{% endif %}				
-			<form class="normaltext" action="{% url 'login' %}" method="post" class="form-signin">
-				<table>
+			<form class="container normaltext w3-card-2" action="{% url 'login' %}" method="post" class="form-signin">
+				<br>
+				<!-- <table>
 					{% for field in form.visible_fields %}
 					<tr>
 						<td>{{field.label_tag}}</td>
@@ -25,13 +26,19 @@
 						<td class="alert">{{field.errors}}</td>
 					</tr>
 					{% endfor %}						
-				</table>
-				<button type="submit" class="btn">Login</button>	
+				</table> <br> -->
+				{% for field in form.visible_fields %}
+				<label>{{field.label_tag}}</label>
+				{{field}}<br>
+				<td class="alert">{{field.errors}}</td>
+				{% endfor %}						
+				<button type="submit" class="btn w3-btn w3-black">Login</button>	
 				<input type="hidden" name="next" value="{{next}}" />
 				{% csrf_token %}
+				<br> <br>
 			</form>
 			<br>
-			<a class="smalltext" href="{% url 'registration' %}">Don't have an account? Register one !</a>	
+			<a class="w3-myfont" href="{% url 'registration' %}">Don't have an account? Register one !</a>	
 			<br>
 		</div>
 		<div class="col-sm-3"> </div>

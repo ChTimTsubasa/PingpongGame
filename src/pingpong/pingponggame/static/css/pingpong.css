@@ -84,3 +84,13 @@
 th, td {
     padding: 5px;
 }
+
+.w3-myfont {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+}
+.w3-allerta {
+	font-family: "Allerta Stencil", Sans-serif;
+}
+.w3-lobster {
+    font-family: "Lobster", serif;
+}
