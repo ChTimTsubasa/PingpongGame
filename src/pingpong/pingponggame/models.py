@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Q
+from django.db.models import Max
 
 from django.contrib.auth.models import User
 
@@ -125,18 +125,34 @@ class CurrentGame(models.Model):
 		return self.player_set.exclude(id=player.id).first()
 
 class GameRecord(models.Model):
-	# Winner of this game
-	winner = models.ForeignKey(
-		Player,
-		on_delete=models.DO_NOTHING,
-		related_name='win_game'
-	)
+	#Dates
+	created = models.DateTimeField(blank=True)
+	ended = models.DateTimeField(auto_now=True)
 
 	# Participants of this game
 	participants = models.ManyToManyField(
 		Player,
 		through='Participant'
 	)
+
+	@staticmethod
+	def record(game):
+		gr = GameRecord.objects.create(
+			created=game.created,
+		)
+		for player in game.player_set.all():
+			participant = Participant(player=player, gameRecord=gr, score=player.score)
+			participant.save()
+		
+		game.player_set.update(score=0, ready=False)
+		game.delete()
+
+		gr.save()
+		return gr
+	
+	def winner(self):
+		winner = Participant.objects.filter(gameRecord=self).order_by('-score')[0]
+		return winner
 
 	@property
 	def html(self):

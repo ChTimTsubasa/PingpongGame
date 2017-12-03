@@ -1,5 +1,5 @@
 from django.test import TestCase
-from pingponggame.models import Player, CurrentGame
+from pingponggame.models import *
 
 from django.contrib.auth.models import User
 
@@ -51,7 +51,7 @@ class PlayerTestCase(TestCase):
 
 class CurrentGameTestCase(TestCase):
     def setUp(self):
-        # create 3 players
+        # create 2 players
         for i in range(1, 3):
             newuser = User.objects.create_user(
                 username=i,
@@ -146,7 +146,6 @@ class CurrentGameTestCase(TestCase):
 
         self.assertFalse(new_c_game.all_ready())
 
-        # TODO move the reset test to another test function
         for player in Player.objects.all():
             player.join_game(new_c_game)
             self.assertFalse(player.ready)
@@ -191,3 +190,27 @@ class GameParticipantTestCase(TestCase):
 
     # TODO test leave game
     
+class GameRecordTest(TestCase):
+    def setUp(self):
+        game = CurrentGame.objects.create()
+        # create 2 players
+        for i in range(1, 3):
+            newuser = User.objects.create_user(
+                username=i,
+                password='123',
+                first_name='test',
+                last_name='test',
+            )
+            p = Player.objects.create(nickname=i, user=newuser)
+            p.join_game(game)
+
+        game.player_set.update(ready=True)
+
+        game.player_set.first().add_score()
+
+    def test_record(self):
+        game = CurrentGame.objects.first()
+        gr = GameRecord.record(game)
+
+        self.assertEqual(gr.winner().score, 1)
+        self.assertEqual(CurrentGame.objects.count(), 0)
