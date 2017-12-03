@@ -1,4 +1,0 @@
-{
-    "id" : "{{game.id}}",
-    "html":"{{game.html|safe}}"
-}

@@ -138,12 +138,22 @@ def scoreboard(request):
 def get_latest_game(request, game_id):
 	context = {}
 	games = GameRecord.objects.filter(id__gt = game_id)
-	print(games)
+	rows = []
+	for game in games:
+		html = render_to_string(
+				"Game.html", 
+				{'id': game.id,
+				 'winner': game.winner().player.nickname,
+				 'created': game.created,
+				 'ended': game.ended,
+				}
+			).replace("\n", "")
+		rows.append(html)
 	if not games.count():
 		context['latest_game'] = game_id
 	else:
 		context['latest_game'] = games.last().id
 
-	context['games'] = games
+	context['games'] = rows
 
 	return render(request, 'Games.json', context, content_type='application/json')

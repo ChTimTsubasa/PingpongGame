@@ -1,7 +1,4 @@
-{
-    "games":[
-      {% for game in games %}{% include 'Game.json' %}{% if not forloop.last %}, {% endif %}{% endfor %}
-    ],
-    "latest_game": "{{latest_game}}"
+{"games":[{% for game in games %}"{{game|safe}}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+  "latest_game": "{{latest_game}}"
 }
   
