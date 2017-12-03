@@ -142,8 +142,8 @@ class GameRecord(models.Model):
 			participant = Participant(player=player, gameRecord=gr, score=player.score)
 			participant.save()
 		
-		game.player_set.update(score=0, ready=False)
-		game.delete()
+		# game.player_set.update(score=0, ready=False)
+		# game.delete()
 
 		gr.save()
 		return gr

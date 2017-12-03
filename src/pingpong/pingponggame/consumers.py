@@ -25,13 +25,18 @@ class GameServer(JsonWebsocketConsumer):
         Called to return the list of groups to automatically add/remove
         this connection to/from.
         """
+        groups = []
         player = Player.objects.get(user=self.message.user)
         # When current player does exist and has a current game
         print(player)
         print(player.currentGame)
         if player and player.currentGame:
+            groups.append("p_%s" % player.user.id)
+        if player.currentGame:
             game = player.currentGame
-            return ["g_%s" % game.id, "p_%s" % player.user.id]
+            groups.append("g_%s" % game.id)
+
+        return groups
 
     @transaction.atomic
     def connect(self, message, **kwargs):
