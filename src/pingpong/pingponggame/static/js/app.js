@@ -362,7 +362,7 @@ function Physics(ui, width, height) {
 Stage(function(stage) {
   console.log("start of tsage@@@@@@@@@@@@@");
 
-  var Mouse = Stage.Mouse;
+  // var Mouse = Stage.Mouse;
   var STORE_KEY = 'breakout-v1';
 
   var width = 20, height = 26;
@@ -430,9 +430,27 @@ Stage(function(stage) {
     'scale' : pscale
   }).appendTo(board);
   //User use mouse to move paddle
-  p2view.on([ Mouse.START, Mouse.MOVE ], function(point) {
-    physics.movePaddle(point.x);
-  });
+  // p2view.on([ Mouse.START, Mouse.MOVE ], function(point) {
+  //   physics.movePaddle(point.x);
+  // });
+  //When user press keyboard arrowleft and arroweight
+  document.onkeydown = function(e) {
+    stage.touch();
+    e = e || window.event;
+    keyboard.down(e.code);
+    console.log(e.code);
+  };
+  var keyboard = {
+    down : function(code) {
+      if (code == 'ArrowLeft') {
+        physics.movePaddle(paddle.position[0] - 3);
+      }
+
+      if (code == 'ArrowRight') {
+        physics.movePaddle(paddle.position[0] + 3);
+      }
+    }
+  };  
 
   var restart = Stage.image('restart').appendTo(board).pin({
     align : 0.5,
