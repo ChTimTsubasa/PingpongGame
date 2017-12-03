@@ -230,12 +230,10 @@ function Physics(ui, width, height) {
       ball.angularVelocity = ball.angle = 0;
 
       if (bottom) {
-        console.log('lose one score')
         world.removeBody(ball);
         sendLoseScore();
 
       } else if (paddle) {
-        // ui.hitPaddle(paddle);
         console.log('hit pad');
         sendBall();
       }
@@ -426,7 +424,6 @@ Stage(function(stage) {
     stage.touch();
     e = e || window.event;
     keyboard.down(e.code);
-    console.log(e.code);
   };
   var keyboard = {
     down : function(code) {
@@ -509,7 +506,6 @@ function pauseGame() {
 }
 
 function handle(message) {
-  console.log(message)
   switch (message.TYPE) {
     case 'EVENT':
       status_trans(message);
@@ -530,7 +526,6 @@ function handle(message) {
 function sendRequest() {
   gameid = $('#game').val();
   $.getJSON("getPlayersInfo/"+gameid, function(data) {
-    console.log(data)
     $('#you').html(data.players[0]);
     $('#opponent').html(data.players[1]);
   });
@@ -538,8 +533,6 @@ function sendRequest() {
 
 
 function status_trans(input) {
-  console.log(client_status)
-  console.log(input.EVENT)
   switch(client_status) {
     case ClientStatus.WAIT:
     {
@@ -565,8 +558,6 @@ function status_trans(input) {
         case EventInput.START:
           console.log('start game');
           disableButton();
-          // TODO get the dir from message
-          console.log(input.DIR)
           fireGame(input.DIR);
           client_status = ClientStatus.GAMING;
         default:
@@ -580,8 +571,7 @@ function status_trans(input) {
         case EventInput.SCORE:
           disableButton();
           pauseGame();
-          // TODO update score
-          console.log(input.SCORE_MAP);
+          console.log(input.SCORER)
           popAlert()
           client_status = ClientStatus.PAUSE;
           
@@ -598,6 +588,7 @@ function status_trans(input) {
           // pop out the result
           disableButton();
           pauseGame();
+          console.log(input.WINNER)
           popAlert_redirect()
           client_status = ClientStatus.END;
           break;
@@ -642,12 +633,10 @@ function disableButton() {
 }
 
 function enableButton() {
-  console.log("button show!!");
   $('#ready_but').show();
 }
 
 function clickReadyButton() {
-  console.log ("button clicked");
   if ($('#ready_but').text() == "Click to ready") {
     socket.send(JSON.stringify({
       TYPE: "STATE",
