@@ -79,6 +79,8 @@ def get_players_info(request, game_id):
 	context = {}
 	player = get_object_or_404(Player, user=request.user)
 	game = player.currentGame
+	if not game:
+		return
 	opponent = game.find_opponent(player)
 	context['you'] = player
 	context['opponent'] = opponent

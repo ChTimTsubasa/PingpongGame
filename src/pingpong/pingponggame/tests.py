@@ -211,6 +211,8 @@ class GameRecordTest(TestCase):
     def test_record(self):
         game = CurrentGame.objects.first()
         gr = GameRecord.record(game)
+        game.player_set.update(ready=False, score=0)
+        game.delete()
 
         self.assertEqual(gr.winner().score, 1)
         self.assertEqual(CurrentGame.objects.count(), 0)
