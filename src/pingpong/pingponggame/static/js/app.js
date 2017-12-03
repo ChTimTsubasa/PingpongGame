@@ -23,8 +23,8 @@ var padIntervalID;
 var client_status = 0;
 
 //pop up an alert box
-function popAlert() {
-  confirm("Someone scored");
+function popAlert(scorer) {
+  confirm(scorer + " score!!");
   socket.send(JSON.stringify({
     TYPE: "STATE",
     STATE: 'ready',
@@ -32,8 +32,14 @@ function popAlert() {
   }));
 }
 
-function popAlert_redirect() {
-  confirm("Game is Over");
+function popEND_redirect() {
+  confirm("Some one out, game over!");
+  // redirect to main page
+  window.location.href = 'http://' + window.location.host + '/main';
+}
+
+function popAlert_redirect(winner) {
+  confirm("Game is Over! " + winner + " wins!");
   // redirect to main page
   window.location.href = 'http://' + window.location.host + '/main';
 }
@@ -572,7 +578,7 @@ function status_trans(input) {
           disableButton();
           pauseGame();
           console.log(input.SCORER)
-          popAlert()
+          popAlert(input.SCORER)
           client_status = ClientStatus.PAUSE;
           
           break;
@@ -580,7 +586,7 @@ function status_trans(input) {
         case EventInput.ONE_OUT:
           disableButton();
           pauseGame();
-          popAlert_redirect()
+          popEND_redirect()
           client_status = ClientStatus.END;
           break;
         
@@ -589,7 +595,7 @@ function status_trans(input) {
           disableButton();
           pauseGame();
           console.log(input.WINNER)
-          popAlert_redirect()
+          popAlert_redirect(input.WINNER)
           client_status = ClientStatus.END;
           break;
       }
@@ -605,7 +611,7 @@ function status_trans(input) {
         case EventInput.ONE_OUT:
           disableButton();
           pauseGame();
-          popAlert_redirect()
+          popEND_redirect()
           client_status = ClientStatus.END;
           break;
       }
