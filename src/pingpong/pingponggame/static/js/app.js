@@ -231,6 +231,7 @@ function Physics(ui, width, height) {
 
       if (bottom) {
         console.log('lose one score')
+        world.removeBody(ball);
         sendLoseScore();
 
       } else if (paddle) {
@@ -267,7 +268,7 @@ function Physics(ui, width, height) {
     ball = findBall();
     var a = Math.PI * 0.3 * 0.4 - 0.2;
     var speed = ui.ballSpeed();
-    ball.velocity = [ speed * Math.sin(a) * 0.8, speed * Math.cos(a) * 0.8 ];
+    ball.velocity = [ speed * Math.sin(a) * 0.6, speed * Math.cos(a) * 0.6 ];
   };
 
   this.gameOver = function() {
