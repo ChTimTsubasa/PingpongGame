@@ -235,7 +235,7 @@ function Physics(ui, width, height) {
         sendLoseScore();
 
       } else if (paddle) {
-        ui.hitPaddle(paddle);
+        // ui.hitPaddle(paddle);
         console.log('hit pad');
         sendBall();
       }
@@ -268,7 +268,7 @@ function Physics(ui, width, height) {
     ball = findBall();
     var a = Math.PI * 0.3 * 0.4 - 0.2;
     var speed = ui.ballSpeed();
-    ball.velocity = [ speed * Math.sin(a) * 0.6, speed * Math.cos(a) * 0.6 ];
+    ball.velocity = [ speed * Math.sin(a) * 0.8, speed * Math.cos(a) * 0.8 ];
   };
 
   this.gameOver = function() {
