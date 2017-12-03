@@ -106,7 +106,7 @@ class GameServer(JsonWebsocketConsumer):
                 game.player_set.update(ready=False)
                 if opponent.score == game.max_score:
                     # One people win
-                    response = {'TYPE': 'EVENT', 'EVENT': 5, 'WINNER': opponent.username}
+                    response = {'TYPE': 'EVENT', 'EVENT': 5, 'WINNER': opponent.user.username}
                     self.group_send('g_%s' % game.id, response)
                     
                     # log the current game to game record
@@ -117,7 +117,7 @@ class GameServer(JsonWebsocketConsumer):
                 else:
                     game.state = CurrentGame.READYING_STATE
                     game.save()
-                    response = {'TYPE': 'EVENT', 'EVENT': 4, 'SCORER': opponent.username} # score message
+                    response = {'TYPE': 'EVENT', 'EVENT': 4, 'SCORER': opponent.user.username} # score message
 
                     # broadcast the score to all users
                     self.group_send('g_%s' % game.id, response)
