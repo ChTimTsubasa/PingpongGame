@@ -354,15 +354,10 @@ function Physics(ui, width, height) {
 }
 
 Stage(function(stage) {
-  console.log("start of tsage@@@@@@@@@@@@@");
-
-  // var Mouse = Stage.Mouse;
-  var STORE_KEY = 'breakout-v1';
-
+  // var STORE_KEY = 'breakout-v1';
   var width = 20, height = 26;
-
   var state = {
-    max : 0,
+    // max : 0,
     ready : false,
     playing : false
   };
@@ -381,9 +376,9 @@ Stage(function(stage) {
         'scale' : 1 / pscale
       });
     },
-    hitPaddle : function() {
-      // state.combo = 1;
-    },
+    // hitPaddle : function() {
+    //   // state.combo = 1;
+    // },
     hitBottom : function() {
       !physics.findBall() && gameOver();
     },
@@ -393,7 +388,6 @@ Stage(function(stage) {
         'scale' : 1 / pscale
       });
     },
-    
     fullPaddle2 : function(body) {
       body.ui = Stage.image('paddleFull').pin({
         'handle' : 0.5,
@@ -407,7 +401,7 @@ Stage(function(stage) {
       return 20;
     },
     ballSpeed : function() {
-      return (13);
+      return (10);
     }
   }, width, height);
 
@@ -456,10 +450,10 @@ Stage(function(stage) {
     }
   });
 
-  try {
-    state.max = localStorage.getItem(STORE_KEY) || 0;
-  } catch (e) {
-  }
+  // try {
+  //   state.max = localStorage.getItem(STORE_KEY) || 0;
+  // } catch (e) {
+  // }
 
   initGame();
 
