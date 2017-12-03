@@ -94,6 +94,7 @@ def join_room(request):
 	current_user = request.user
 	current_player = get_object_or_404(Player, user=current_user)
 	context['player'] = current_player.id
+	
 	if request.method == 'GET':
 		joined_game = CurrentGame.get_game_random()
 		if not joined_game:
@@ -101,9 +102,6 @@ def join_room(request):
 			context['errors'] = errors
 			context['form'] = JoinRoomForm()
 			return render(request, 'UserMainPage.html', context)
-		print(joined_game)
-		current_player.join_game(joined_game)
-		context['game'] = joined_game.id
 
 	if request.method == 'POST':
 		join_form =  JoinRoomForm(request.POST)
@@ -112,26 +110,26 @@ def join_room(request):
 			return render(request, 'UserMainPage.html', context)
 
 		room_id = request.POST['room_id']
-		# There should not be an error here since we have already
-		# checked in the form
-		game = CurrentGame.get_game_by_id(room_id)
-		current_player.join_game(game)
-		context['game'] = game.id
+		joined_game = CurrentGame.get_game_by_id(room_id)
 
-	return render(request, 'GameRoom.html', context)
-
+	try:
+		current_player.join_game(joined_game)
+		context['game'] = joined_game.id
+		return render(request, 'GameRoom.html', context)
+	except AttributeError:
+		errors.append('You are already in a room!!')
+		context['errors'] = errors
+		context['form'] = JoinRoomForm()
+		return render(request, 'UserMainPage.html', context)
 
 # Render the ScoreBoard
 @transaction.atomic
 @login_required	
 def scoreboard(request):
 	context = {}
-
-	current_user = request.user
-	games = Game.objects.all()
-	player = get_object_or_404(Player, user=current_user)
+	current_player = get_object_or_404(Player, user=request.user)
 	context['latest_game'] = -1
-	context['current_user'] = current_user
+	context['current_player'] = current_player
 
 	return render(request, 'ScoreBoard.html', context)
 
@@ -139,9 +137,9 @@ def scoreboard(request):
 @login_required
 def get_latest_game(request, game_id):
 	context = {}
-	games = Game.get_newer_game(game_id)
+	games = GameRecord.objects.filter(id__gt = game_id)
 	print(games)
-	if not games.last():
+	if not games.count():
 		context['latest_game'] = game_id
 	else:
 		context['latest_game'] = games.last().id

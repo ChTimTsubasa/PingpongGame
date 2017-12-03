@@ -9,9 +9,8 @@
 <div class="row">
 	<div class="col-1"></div>
 	<div class="col-3">
-		<span class="boldtext">User Name:</span> <span class="normaltext">{{current_user.username}}</span><br>
-		<span class="boldtext" >First Name:</span> <span class="normaltext">{{current_user.first_name}}</span><br>
-		<span class="boldtext">Last Name:</span>  <span class="normaltext">{{current_user.last_name}}</span><br>
+		<span class="boldtext">Nick Name:</span> <span class="normaltext">{{current_player.nickname}}</span><br>
+		<span class="boldtext" >User Name:</span> <span class="normaltext">{{current_player.username}}</span><br>
 	</div>
 	<div class="col-7 block scoreboard">
 		<span class="largertext">Score Board:</span> <br>
@@ -19,11 +18,10 @@
 		<table id="scoreboard" class="normaltext" border="1">
 			<thead>
 				<tr>
+					<th>Game Record ID</th>
 					<th>Winner</th>
-					<th>Creator</th>
-					<th>Opponent</th>
-					<th>Completed Time</th>
 					<th>Created Time</th>
+					<th>Completed Time</th>
 				</tr>
 			</thead>
 			<tbody>

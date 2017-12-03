@@ -602,9 +602,8 @@ function status_trans(input) {
         case EventInput.ONE_OUT:
           disableButton();
           pauseGame();
-          enableButton();
-          console.log("pause game since some one out")
-
+          popAlert_redirect()
+          client_status = ClientStatus.END;
           break;
         
         case EventInput.ONE_WIN:
@@ -621,10 +620,13 @@ function status_trans(input) {
     {
       switch (input.EVENT) {
         case EventInput.START:
-          fireGame(input.dir);
+          fireGame(input.DIR);
           client_status = ClientStatus.GAMING;
           break;
-        case EventInput.TIMEOUT:
+        case EventInput.ONE_OUT:
+          disableButton();
+          pauseGame();
+          popAlert_redirect()
           client_status = ClientStatus.END;
           break;
       }

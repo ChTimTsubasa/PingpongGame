@@ -2,7 +2,7 @@ import json
 from channels import Group
 from channels.auth import channel_session_user, channel_session_user_from_http
 from channels.generic.websockets import JsonWebsocketConsumer
-from .models import Player, CurrentGame
+from .models import Player, CurrentGame, GameRecord
 
 from django.db import transaction
 
@@ -104,9 +104,8 @@ class GameServer(JsonWebsocketConsumer):
                     response = {'TYPE': 'EVENT', 'EVENT': 5, 'WINNER': opponent.id}
                     self.group_send('g_%s' % game.id, response)
                     
-                    # TODO log the current game to game record
-                    game.player_set.update(score=0, ready=False)
-                    game.delete()
+                    # log the current game to game record
+                    GameRecord.record(game)
 
                 else:
                     game.state = CurrentGame.READYING_STATE
@@ -140,19 +139,23 @@ class GameServer(JsonWebsocketConsumer):
         """
         Perform things on connection close
         """
-        # TODO think about it
-        player = Player.objects.get(user=message.user)
-        if player.currentGame:
-            game = player.currentGame
-            player.leave_game(game)
-            # all the players in this room have left
-            if game.player_set.count() == 0:
-                game.delete()
 
-            # there are some players left in the room
-            else:
-                game.state = CurrentGame.JOIN_STATE
-                game.save()
-                game.player_set.update(score=0, ready=False)
-                ONE_OUT_response = {'TYPE': 'EVENT', 'EVENT': 2}
-                self.group_send('g_%s' % game.id, ONE_OUT_response)
+        player = Player.objects.get(user=message.user)
+        
+        # the game has ended gracefully
+        if not player.currentGame:
+            return
+
+        game = player.currentGame
+        
+        player.leave_game(game)
+        if game.player_set.count() == 0:
+            game.delete()
+            return
+
+        ONE_OUT_response = {'TYPE': 'EVENT', 'EVENT': 2}
+        self.group_send('g_%s' % game.id, ONE_OUT_response)
+        
+        game.state = CurrentGame.JOIN_STATE
+        game.player_set.update(score=0, ready=False)
+        game.save()

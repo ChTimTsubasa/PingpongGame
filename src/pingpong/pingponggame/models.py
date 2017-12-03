@@ -69,13 +69,11 @@ class CurrentGame(models.Model):
 	JOIN_STATE = 0
 	READYING_STATE = 1
 	GAMING_STATE = 2
-	PAUSE_STATE = 3
 
 	GAME_STATE = (
 		(JOIN_STATE, 'Join'),
 		(READYING_STATE, 'Ready'),
 		(GAMING_STATE, 'Gaming'),
-		(PAUSE_STATE, 'Pause'),
 	)
 	# game state
 	state = models.IntegerField(choices=GAME_STATE, default=JOIN_STATE)
