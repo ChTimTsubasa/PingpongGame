@@ -30,7 +30,7 @@ SECRET_KEY = config.get('secrets', 'SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['ec2-54-172-128-209.compute-1.amazonaws.com']
+ALLOWED_HOSTS = [config.get('hosts', 'ALLOWED_HOST')]
 
 
 # Application definition
@@ -142,7 +142,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'asgi_redis.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('pp.d2kiej.ng.0001.use1.cache.amazonaws.com', 6379)],
+            'hosts': [(config.get('redis', "HOST"), config.getint('redis', "PORT"))],
         },
         'ROUTING': 'pingpong.routing.routing',
     }
@@ -151,6 +151,6 @@ CHANNEL_LAYERS = {
 CACHES = {
     "default": {
         "BACKEND": "redis_cache.RedisCache",
-        'LOCATION': 'pp.d2kiej.ng.0001.use1.cache.amazonaws.com:6379',
+        'LOCATION': config.get('redis', "HP"),
     }
 }
