@@ -1,6 +1,5 @@
 {% extends "Base.html" %}
 
-
 {% block title %}Game Room{% endblock %}
 
 {% block scripts %}
@@ -17,30 +16,36 @@
 {% endblock %}
 
 {% block navbar %}
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item ">
-            <a class="nav-link w3-text-white w3-large w3-myfont" href="{% url 'logout' %}"><b>Log Out</b></a>
-        </li>                   
-    </ul>
-    
+    <ul class="navbar-nav">
+		<li class="nav-item">
+			<a class="nav-link w3-text-white w3-large w3-myfont" href="{% url 'main' %}"><b>My Lobby</b></a>
+		</li>
+	</ul>	
+	<a class="w3-bar-item"></a>
+	<a class="w3-bar-item"></a>
+	<ul class="navbar-nav">
+		<li class="nav-item">
+			<a class="nav-link  w3-text-white w3-large w3-myfont" href="{% url 'scoreboard' %}"><b>View Scoreboard</b></a>
+		</li>
+	</ul>
+
+	<ul class="navbar-nav ml-auto">
+		<li class="nav-item ">
+			<a class="nav-link  w3-text-white w3-large w3-myfont" href="{% url 'logout' %}"><b>Log Out</b></a>
+		</li>					
+	</ul>	
 {% endblock %}
 
 {% block bodycontent %}
-    <input type='hidden' id='player' value="{{player}}">
-    <input type='hidden' id='game' value="{{game}}">
     <div class="row">
 		<div class="col-md-3">
             <br>
             <div class="w3-myfont w3-xlarge w3-card"><b>Your game room id: {{game}}</b> </div>
-            <br>
-            <br>
+            <br><br>
             <div class="w3-card w3-container w3-myfont">
                 <div class="w3-myfont w3-xlarge"> 
                     <b>Your information:</b>
                     <div class="w3-myfont w3-large" id="you"></div>
-                    <!-- <p> <b>Opponent:</b></p>
-                    <div id="opponent">
-                    </div> -->
                 </div>
                 <br><br>
                 <button class = 'w3-button w3-black' id = "ready_but"></button><br><br>

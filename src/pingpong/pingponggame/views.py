@@ -33,7 +33,6 @@ def registration(request):
 
 	if not user_form.is_valid() or \
 		not password_form.is_valid():
-		print (request.POST)
 		return render(request, 'Registration.html', context)
 
 	newuser = User.objects.create_user(username=request.POST['username'],
@@ -63,15 +62,29 @@ def main(request):
 @login_required	
 def create_room(request):
 	context = {}
-	player = Player.objects.get(user=request.user)
+	errors = []
+	current_player = get_object_or_404(Player, user=request.user)
 
-	game = CurrentGame.objects.create()
-	player.join_game(game)
+	context['player'] = current_player
+	if current_player.currentGame:
+		errors.append('You are already in a room!!')
+		context['errors'] = errors
+		context['form'] = JoinRoomForm()
+		return render(request, 'UserMainPage.html', context)
+	
+	joined_game = CurrentGame.objects.create()
 
-	context["game"] = game.id
-	context["player"] = player.id
-
-	return render(request, 'GameRoom.html', context)
+	try:
+		current_player.join_game(joined_game)
+		context['game'] = joined_game.id
+		return render(request, 'GameRoom.html', context)
+	except AttributeError:
+		# Should not reach here, just for safety
+		errors.append('You are already in a room!!')
+		context['errors'] = errors
+		context['form'] = JoinRoomForm()
+		return render(request, 'UserMainPage.html', context)
+		
 
 @transaction.atomic
 @login_required	
@@ -95,8 +108,9 @@ def join_room(request):
 	errors = []
 	current_user = request.user
 	current_player = get_object_or_404(Player, user=current_user)
-	context['player'] = current_player.id
-	
+	context['player'] = current_player
+	context['user'] = request.user
+
 	if request.method == 'GET':
 		joined_game = CurrentGame.get_game_random()
 		if not joined_game:

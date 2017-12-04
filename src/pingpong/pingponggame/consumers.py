@@ -28,8 +28,6 @@ class GameServer(JsonWebsocketConsumer):
         groups = []
         player = Player.objects.get(user=self.message.user)
         # When current player does exist and has a current game
-        print(player)
-        print(player.currentGame)
         if player and player.currentGame:
             groups.append("p_%s" % player.user.id)
         if player.currentGame:
@@ -60,14 +58,12 @@ class GameServer(JsonWebsocketConsumer):
             # 1 is ALL_IN
             ALL_IN_response = {'TYPE': 'EVENT', 'EVENT': 1}    
             # Tell all clients that they are all in
-            print(ALL_IN_response)
             self.group_send('g_%s' % game.id, ALL_IN_response)
 
     def receive(self, content, **kwargs):
         """
         Called when a message is received with decoded JSON content
         """
-        # print(content)
         if content['TYPE'] == 'STATE':
             self.state_handle(content)
         else:
@@ -75,14 +71,12 @@ class GameServer(JsonWebsocketConsumer):
     
     @transaction.atomic
     def state_handle(self, content):
-        print(content)
         player = Player.objects.get(user=self.message.user)
         game = player.currentGame
         if game.state == CurrentGame.READYING_STATE:
             if content['STATE'] == 'ready':
                 player.set_ready(content['VAL'])
                 if game.all_ready():
-                    print("starting game")
                     game.state = CurrentGame.GAMING_STATE
                     game.save()
 

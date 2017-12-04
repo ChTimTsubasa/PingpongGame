@@ -22,6 +22,16 @@ var socket;
 var padIntervalID;
 var client_status = 0;
 
+var instructions = 
+"How to play: \n\
+  1. Use <- -> key to control the pad;\n\
+  2. When the ball hit oppponent's end, you score;\n\
+  3. Anyone score 3 first would win the game.\n"
+
+function popInstructions() {
+  confirm(instructions)
+}
+
 //pop up an alert box
 function popAlert(scorer) {
   confirm(scorer + " score!!");
@@ -240,7 +250,6 @@ function Physics(ui, width, height) {
         sendLoseScore();
 
       } else if (paddle) {
-        console.log('hit pad');
         sendBall();
       }
     }
@@ -562,7 +571,6 @@ function status_trans(input) {
           client_status = ClientStatus.WAIT;
           break;
         case EventInput.START:
-          console.log('start game');
           disableButton();
           fireGame(input.DIR);
           client_status = ClientStatus.GAMING;
@@ -679,6 +687,7 @@ $(document).ready(function () {
     $('#ready_but').click(clickReadyButton);
     disableButton();
     client_status = ClientStatus.WAIT;
+    popInstructions();
   }
   
   socket.onclose = function() {

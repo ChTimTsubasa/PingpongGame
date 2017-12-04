@@ -8,9 +8,9 @@ from pingponggame.caching import GameCache
 from django.core.cache import cache
 import datetime
 
-# Create your tests here.
-
 from django.db import transaction
+
+# Test player create and ready
 class PlayerTestCase(TestCase):
     def test_create(self):
         newuser = User.objects.create_user(
@@ -49,6 +49,7 @@ class PlayerTestCase(TestCase):
         
         players = Player.objects.all()
 
+# Test player creation of game, random game participants and so on
 class CurrentGameTestCase(TestCase):
     def setUp(self):
         # create 2 players
@@ -168,6 +169,7 @@ class CurrentGameTestCase(TestCase):
         self.assertEqual(players[0], game.find_opponent(players[1]))
         self.assertEqual(players[1], game.find_opponent(players[0]))
 
+# Test joining a game
 class GameParticipantTestCase(TestCase):
 
     def test_join_game(self):
@@ -188,8 +190,7 @@ class GameParticipantTestCase(TestCase):
             self.assertRaises(AttributeError, player.join_game(game))
         self.assertEqual(game.player_set.count(), 1)
 
-    # TODO test leave game
-    
+# Test game recording
 class GameRecordTest(TestCase):
     def setUp(self):
         game = CurrentGame.objects.create()
